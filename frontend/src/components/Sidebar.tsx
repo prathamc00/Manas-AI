@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+  Home,
   MessageSquare, 
   Heart, 
   Brain, 
@@ -9,13 +10,14 @@ import {
   EyeOff, 
   Plus,
   Compass,
+  Info,
   X
 } from 'lucide-react';
 import type { Session } from '../types';
 
 interface SidebarProps {
-  activeTab: 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding';
-  setActiveTab: (tab: 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding') => void;
+  activeTab: 'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about';
+  setActiveTab: (tab: 'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about') => void;
   sessions: Session[];
   activeSessionId: string | null;
   onSelectSession: (id: string) => void;
@@ -39,11 +41,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile
 }) => {
   const navItems = [
+    { id: 'home', label: 'Home Dashboard', icon: Home },
     { id: 'chat', label: 'Active Session', icon: MessageSquare },
     { id: 'checkin', label: 'Daily Check-in', icon: Heart },
     { id: 'memory', label: 'Memory Vault', icon: Brain },
     { id: 'goals', label: 'Growth Goals', icon: Target },
     { id: 'grounding', label: 'Somatic Grounding', icon: Wind },
+    { id: 'about', label: 'About MANAS', icon: Info },
   ];
 
   const handleNavClick = (tabId: string) => {
@@ -71,15 +75,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Brand Header */}
         <div className="p-4 border-b border-[#262520] flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
+          <button 
+            onClick={() => handleNavClick('home')}
+            className="flex items-center space-x-2.5 text-left group"
+          >
             <div className="w-8 h-8 rounded-lg bg-[#D97757] text-[#181714] font-bold text-base flex items-center justify-center shadow-md active:scale-95 transition">
               <span className="font-editorial italic">M</span>
             </div>
             <div>
-              <h1 className="font-editorial text-sm font-semibold text-[#ECE7DF] tracking-tight">MANAS</h1>
+              <h1 className="font-editorial text-sm font-semibold text-[#ECE7DF] tracking-tight group-hover:text-[#D97757] transition">MANAS</h1>
               <p className="text-[10px] text-[#A39D93]">Therapeutic Companion</p>
             </div>
-          </div>
+          </button>
 
           <div className="flex items-center space-x-1.5">
             {/* Quick Disguise Button */}

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
+import { HomeView } from './components/home/HomeView';
+import { AboutView } from './components/about/AboutView';
 import { ChatArea } from './components/chat/ChatArea';
 import { DailyCheckIn } from './components/checkin/DailyCheckIn';
 import { MemoryVault } from './components/memory/MemoryVault';
@@ -11,7 +13,7 @@ import { api } from './lib/api';
 import type { Session, Message, Memory, MoodEntry, Goal, SafetyResources } from './types';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'checkin' | 'memory' | 'goals' | 'grounding'>('chat');
+  const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about'>('home');
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -173,6 +175,27 @@ export function App() {
       />
 
       <main className="flex-1 flex overflow-hidden bg-[#181714] relative">
+        {activeTab === 'home' && (
+          <HomeView
+            sessions={sessions}
+            memories={memories}
+            moodHistory={moodHistory}
+            goals={goals}
+            onStartSession={() => {
+              handleNewSession();
+            }}
+            onNavigate={(tab) => setActiveTab(tab)}
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          />
+        )}
+
+        {activeTab === 'about' && (
+          <AboutView
+            onBackToHome={() => setActiveTab('home')}
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          />
+        )}
+
         {activeTab === 'chat' && (
           <ChatArea
             messages={messages}
