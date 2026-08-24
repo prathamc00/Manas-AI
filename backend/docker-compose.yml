@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  manas-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: manas-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - AI_PROVIDER=groq
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=groq/compound-mini
+      - CRISIS_THRESHOLD=0.7
+    volumes:
+      - ./data:/app/data
