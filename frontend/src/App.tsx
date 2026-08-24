@@ -25,6 +25,7 @@ export function App() {
   const [safetyResources, setSafetyResources] = useState<SafetyResources | null>(null);
   const [isDisguised, setIsDisguised] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
 
   // Initial load
   useEffect(() => {
@@ -172,6 +173,8 @@ export function App() {
         onTriggerDisguise={() => setIsDisguised(true)}
         isMobileOpen={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
       />
 
       <main className="flex-1 flex overflow-hidden bg-[#181714] relative">
