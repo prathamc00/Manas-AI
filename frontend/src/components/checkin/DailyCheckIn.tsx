@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Heart, Sparkles, Check, Calendar } from 'lucide-react';
+import { Heart, Sparkles, Check, Calendar, Menu } from 'lucide-react';
 import type { MoodEntry } from '../../types';
 
 interface DailyCheckInProps {
   moodHistory: MoodEntry[];
   onLogMood: (data: { mood: number; stress: number; energy: number; notes?: string }) => Promise<void>;
+  onOpenMobileMenu?: () => void;
 }
 
-export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMood }) => {
+export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMood, onOpenMobileMenu }) => {
   const [selectedMood, setSelectedMood] = useState<number>(3);
   const [stress, setStress] = useState<number>(4);
   const [energy, setEnergy] = useState<number>(6);
@@ -38,34 +39,45 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMo
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-[#181714] text-[#ECE7DF] animate-fade-in">
-      <div className="max-w-2xl mx-auto space-y-8">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-[#181714] text-[#ECE7DF] animate-fade-in">
+      <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
-        <div>
-          <div className="flex items-center space-x-2 text-[#D97757] text-xs font-semibold uppercase tracking-wider">
-            <Heart className="w-3.5 h-3.5" />
-            <span>Emotional Reflection</span>
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center space-x-2 text-[#D97757] text-xs font-semibold uppercase tracking-wider">
+              <Heart className="w-3.5 h-3.5" />
+              <span>Emotional Reflection</span>
+            </div>
+            <h2 className="font-editorial text-xl md:text-2xl font-semibold text-[#ECE7DF] mt-1">
+              How is your inner landscape today?
+            </h2>
+            <p className="text-xs text-[#A39D93] mt-1 leading-relaxed">
+              Taking a short pause to name what you are carrying creates longitudinal awareness without pressure to fix.
+            </p>
           </div>
-          <h2 className="font-editorial text-2xl font-semibold text-[#ECE7DF] mt-1">
-            How is your inner landscape today?
-          </h2>
-          <p className="text-xs text-[#A39D93] mt-1 leading-relaxed">
-            Taking a short pause to name what you are carrying creates longitudinal awareness without pressure to fix.
-          </p>
+
+          {onOpenMobileMenu && (
+            <button
+              onClick={onOpenMobileMenu}
+              className="p-1.5 rounded-lg text-[#A39D93] hover:text-[#ECE7DF] hover:bg-[#22211C] md:hidden transition shrink-0"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Check-in Card */}
-        <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-[#22211C] border border-[#33312B] space-y-6 shadow-sm">
+        <form onSubmit={handleSubmit} className="p-4 md:p-6 rounded-2xl bg-[#22211C] border border-[#33312B] space-y-5 md:space-y-6 shadow-sm animate-slide-up">
           {/* Mood Selector Grid */}
           <div>
-            <label className="block text-xs font-semibold text-[#ECE7DF] mb-3">Overall State</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <label className="block text-xs font-semibold text-[#ECE7DF] mb-2.5">Overall State</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {moodOptions.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setSelectedMood(opt.value)}
-                  className={`p-3.5 rounded-xl border text-left transition duration-200 flex flex-col justify-between space-y-2 ${
+                  className={`p-3 md:p-3.5 rounded-xl border text-left transition duration-200 flex flex-col justify-between space-y-2 active:scale-95 ${
                     selectedMood === opt.value
                       ? 'bg-[#2B2A24] border-[#D97757] text-[#ECE7DF] shadow-sm'
                       : 'bg-[#1D1C18] border-[#33312B] hover:border-[#47443C] text-[#A39D93]'
@@ -84,9 +96,9 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMo
           </div>
 
           {/* Sliders */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Stress */}
-            <div className="bg-[#1D1C18] p-4 rounded-xl border border-[#33312B] space-y-2">
+            <div className="bg-[#1D1C18] p-3.5 md:p-4 rounded-xl border border-[#33312B] space-y-2">
               <div className="flex justify-between text-xs font-medium">
                 <span className="text-[#ECE7DF]">Perceived Stress</span>
                 <span className="text-[#D97757] font-semibold">{stress}/10</span>
@@ -106,7 +118,7 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMo
             </div>
 
             {/* Energy */}
-            <div className="bg-[#1D1C18] p-4 rounded-xl border border-[#33312B] space-y-2">
+            <div className="bg-[#1D1C18] p-3.5 md:p-4 rounded-xl border border-[#33312B] space-y-2">
               <div className="flex justify-between text-xs font-medium">
                 <span className="text-[#ECE7DF]">Energy Level</span>
                 <span className="text-[#D97757] font-semibold">{energy}/10</span>
@@ -144,7 +156,7 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMo
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 rounded-xl bg-[#D97757] hover:bg-[#E38769] text-[#181714] text-xs font-semibold shadow-md transition duration-200 flex items-center justify-center space-x-2"
+            className="w-full py-3 rounded-xl bg-[#D97757] hover:bg-[#E38769] active:scale-[0.99] text-[#181714] text-xs font-semibold shadow-md transition duration-200 flex items-center justify-center space-x-2"
           >
             {submittedSuccess ? (
               <>
@@ -178,7 +190,7 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({ moodHistory, onLogMo
                 return (
                   <div
                     key={entry.id}
-                    className="p-3.5 rounded-xl bg-[#22211C] border border-[#33312B] flex items-center justify-between text-xs"
+                    className="p-3.5 rounded-xl bg-[#22211C] border border-[#33312B] flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2"
                   >
                     <div className="space-y-0.5">
                       <div className="font-semibold text-[#ECE7DF] flex items-center space-x-2">

@@ -22,6 +22,7 @@ export function App() {
   const [isSafetyOpen, setIsSafetyOpen] = useState<boolean>(false);
   const [safetyResources, setSafetyResources] = useState<SafetyResources | null>(null);
   const [isDisguised, setIsDisguised] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Initial load
   useEffect(() => {
@@ -157,7 +158,7 @@ export function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#181714]">
+    <div className="flex h-screen h-[100dvh] w-screen overflow-hidden bg-[#181714]">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -167,19 +168,26 @@ export function App() {
         onNewSession={handleNewSession}
         onOpenSafety={() => setIsSafetyOpen(true)}
         onTriggerDisguise={() => setIsDisguised(true)}
+        isMobileOpen={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
-      <main className="flex-1 flex overflow-hidden bg-[#181714]">
+      <main className="flex-1 flex overflow-hidden bg-[#181714] relative">
         {activeTab === 'chat' && (
           <ChatArea
             messages={messages}
             isLoading={isLoading}
             onSendMessage={handleSendMessage}
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           />
         )}
 
         {activeTab === 'checkin' && (
-          <DailyCheckIn moodHistory={moodHistory} onLogMood={handleLogMood} />
+          <DailyCheckIn
+            moodHistory={moodHistory}
+            onLogMood={handleLogMood}
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          />
         )}
 
         {activeTab === 'memory' && (
@@ -188,6 +196,7 @@ export function App() {
             onConfirmMemory={handleConfirmMemory}
             onDeleteMemory={handleDeleteMemory}
             onCreateMemory={handleCreateMemory}
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           />
         )}
 
@@ -196,10 +205,15 @@ export function App() {
             goals={goals}
             onCreateGoal={handleCreateGoal}
             onUpdateGoal={handleUpdateGoal}
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           />
         )}
 
-        {activeTab === 'grounding' && <GroundingExercise />}
+        {activeTab === 'grounding' && (
+          <GroundingExercise
+            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          />
+        )}
       </main>
 
       <EmergencyModal

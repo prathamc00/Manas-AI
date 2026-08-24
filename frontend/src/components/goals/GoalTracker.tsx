@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Target, Plus, CheckCircle2, Circle } from 'lucide-react';
+import { Target, Plus, CheckCircle2, Circle, Menu } from 'lucide-react';
 import type { Goal } from '../../types';
 
 interface GoalTrackerProps {
   goals: Goal[];
   onCreateGoal: (data: { title: string; description?: string; strategies?: string[] }) => Promise<void>;
   onUpdateGoal: (id: string, updates: Partial<Goal> & { progress_note?: string }) => Promise<void>;
+  onOpenMobileMenu?: () => void;
 }
 
 export const GoalTracker: React.FC<GoalTrackerProps> = ({
   goals,
   onCreateGoal,
   onUpdateGoal,
+  onOpenMobileMenu,
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -47,7 +49,7 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-[#181714] text-[#ECE7DF] animate-fade-in">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-[#181714] text-[#ECE7DF] animate-fade-in">
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -56,24 +58,36 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
               <Target className="w-3.5 h-3.5" />
               <span>Behavioral Intentions</span>
             </div>
-            <h2 className="font-editorial text-2xl font-semibold text-[#ECE7DF] mt-1">Growth Commitments</h2>
+            <h2 className="font-editorial text-xl md:text-2xl font-semibold text-[#ECE7DF] mt-1">Growth Commitments</h2>
             <p className="text-xs text-[#A39D93] mt-1 leading-relaxed">
               Focus on low-friction micro-habits and self-compassionate consistency.
             </p>
           </div>
 
-          <button
-            onClick={() => setIsCreating(!isCreating)}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#22211C] hover:bg-[#2B2A24] border border-[#33312B] hover:border-[#D97757]/50 text-xs text-[#ECE7DF] font-medium transition shadow-sm"
-          >
-            <Plus className="w-3.5 h-3.5 text-[#D97757]" />
-            <span>New Intention</span>
-          </button>
+          <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={() => setIsCreating(!isCreating)}
+              className="flex items-center space-x-1.5 px-3 md:px-3.5 py-2 rounded-xl bg-[#22211C] hover:bg-[#2B2A24] active:scale-95 border border-[#33312B] hover:border-[#D97757]/50 text-xs text-[#ECE7DF] font-medium transition shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#D97757]" />
+              <span className="hidden sm:inline">New Intention</span>
+              <span className="sm:hidden">New</span>
+            </button>
+
+            {onOpenMobileMenu && (
+              <button
+                onClick={onOpenMobileMenu}
+                className="p-2 rounded-xl bg-[#22211C] border border-[#33312B] text-[#A39D93] md:hidden active:scale-95"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Create Form */}
         {isCreating && (
-          <form onSubmit={handleCreate} className="p-5 rounded-2xl bg-[#22211C] border border-[#33312B] space-y-4 shadow-sm">
+          <form onSubmit={handleCreate} className="p-4 md:p-5 rounded-2xl bg-[#22211C] border border-[#33312B] space-y-4 shadow-sm animate-slide-up">
             <h3 className="text-xs font-semibold text-[#ECE7DF]">Set a New Growth Goal</h3>
             <div className="space-y-3">
               <input
@@ -108,7 +122,7 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#D97757] hover:bg-[#E38769] text-[#181714] text-xs font-semibold rounded-xl transition"
+                className="px-4 py-2 bg-[#D97757] hover:bg-[#E38769] active:scale-95 text-[#181714] text-xs font-semibold rounded-xl transition"
               >
                 Create Intention
               </button>
@@ -117,7 +131,7 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
         )}
 
         {/* Goals List */}
-        <div className="space-y-3">
+        <div className="space-y-3 animate-slide-up">
           {goals.length === 0 ? (
             <p className="text-xs text-[#736E65] p-8 bg-[#22211C] rounded-xl border border-[#33312B] text-center italic">
               No intentions created yet. Add a small habit above.
@@ -128,15 +142,15 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
               return (
                 <div
                   key={goal.id}
-                  className={`p-5 rounded-2xl bg-[#22211C] border transition duration-150 space-y-3 ${
+                  className={`p-4 md:p-5 rounded-2xl bg-[#22211C] border transition duration-150 space-y-3 ${
                     isAchieved ? 'border-[#33312B] opacity-75' : 'border-[#383630]'
                   }`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start space-x-3">
                       <button
                         onClick={() => toggleStatus(goal)}
-                        className="mt-0.5 text-[#D97757] hover:opacity-80 transition"
+                        className="mt-0.5 text-[#D97757] hover:opacity-80 transition active:scale-90"
                       >
                         {isAchieved ? <CheckCircle2 className="w-5 h-5 text-[#D97757]" /> : <Circle className="w-5 h-5 text-[#736E65]" />}
                       </button>
@@ -150,7 +164,7 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
                       </div>
                     </div>
 
-                    <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-md bg-[#1D1C18] text-[#A39D93] border border-[#33312B]">
+                    <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-md bg-[#1D1C18] text-[#A39D93] border border-[#33312B] shrink-0">
                       {goal.status.replace('_', ' ')}
                     </span>
                   </div>
@@ -183,7 +197,7 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
                   {/* Inline Note Add */}
                   <div className="pl-8 pt-1">
                     {activeNoteGoalId === goal.id ? (
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <input
                           type="text"
                           value={progressNoteText}
@@ -191,18 +205,20 @@ export const GoalTracker: React.FC<GoalTrackerProps> = ({
                           placeholder="Log a small win or reflection..."
                           className="flex-1 bg-[#1D1C18] border border-[#33312B] rounded-lg px-3 py-1.5 text-xs text-[#ECE7DF] outline-none"
                         />
-                        <button
-                          onClick={() => handleAddNote(goal.id)}
-                          className="px-3 py-1.5 bg-[#D97757] hover:bg-[#E38769] text-[#181714] text-xs font-semibold rounded-lg"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setActiveNoteGoalId(null)}
-                          className="px-2 py-1.5 text-xs text-[#736E65]"
-                        >
-                          Cancel
-                        </button>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleAddNote(goal.id)}
+                            className="px-3 py-1.5 bg-[#D97757] hover:bg-[#E38769] text-[#181714] text-xs font-semibold rounded-lg active:scale-95"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setActiveNoteGoalId(null)}
+                            className="px-2 py-1.5 text-xs text-[#736E65]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <button
