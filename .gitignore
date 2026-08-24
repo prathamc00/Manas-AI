@@ -9,14 +9,15 @@ __pycache__/
 *$py.class
 *.so
 .Python
-build/
+/build/
 develop-eggs/
-dist/
+/dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
+backend/lib/
 parts/
 sdist/
 var/
@@ -49,6 +50,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Allow src/lib in frontend
+!frontend/src/lib/
+!frontend/src/lib/**
 
 # IDE & Editor artifacts
 .vscode/
