@@ -30,6 +30,7 @@ const tabVariants = {
 
 export function App() {
   const [viewState, setViewState] = useState<'landing' | 'auth' | 'app'>('landing');
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
   const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about'>('home');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -67,9 +68,15 @@ export function App() {
       if (user) {
         setCurrentUser(user);
         setViewState('app');
+      } else {
+        // No user — always go to landing for fresh visitors
+        setViewState('landing');
       }
     } catch {
       setCurrentUser(null);
+      setViewState('landing');
+    } finally {
+      setIsInitializing(false);
     }
     await loadAllData();
   };
@@ -208,6 +215,20 @@ export function App() {
 
   if (isDisguised) {
     return <DisguiseView onUnlock={() => setIsDisguised(false)} />;
+  }
+
+  // While checking stored token, show a minimal splash loader
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen w-full bg-[#12110E] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#D97757] flex items-center justify-center shadow-lg shadow-[#D97757]/30 animate-pulse">
+            <span className="font-serif text-2xl italic font-bold text-white">M</span>
+          </div>
+          <div className="w-1 h-1 rounded-full bg-[#736E65] animate-ping" />
+        </div>
+      </div>
+    );
   }
 
   return (

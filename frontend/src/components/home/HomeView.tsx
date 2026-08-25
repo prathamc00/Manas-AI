@@ -11,6 +11,7 @@
     Clock, 
     Menu
   } from 'lucide-react';
+  import { Button } from '../ui/button';
   import type { Session, Memory, MoodEntry, Goal } from '../../types';
 
   interface HomeViewProps {
@@ -85,14 +86,16 @@
             </p>
           </div>
 
-          <button
+          <Button
+            variant="terracotta"
+            size="lg"
             onClick={onStartSession}
-            className="px-6 py-3 rounded-xl bg-[#D97757] hover:bg-[#E38769] active:scale-95 text-[#181714] font-semibold text-xs transition duration-200 shadow-md flex items-center space-x-2 shrink-0 z-10"
+            leftIcon={<MessageSquare className="w-4 h-4" />}
+            rightIcon={<ArrowRight className="w-4 h-4" />}
+            className="rounded-xl px-6 py-3 font-semibold text-xs shrink-0 z-10 text-[#181714]"
           >
-            <MessageSquare className="w-4 h-4" />
-            <span>Begin Session</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+            Begin Session
+          </Button>
 
           {/* Background subtle watermark */}
           <div className="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-5 pointer-events-none">

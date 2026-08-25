@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Lock, Mail, User as UserIcon, Eye, EyeOff, Loader2, Sparkles } from 'lucide-react';
+import { X, Lock, Mail, User as UserIcon, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { api } from '../../lib/api';
+import { Button } from '../ui/button';
 import type { User } from '../../types';
 
 interface AuthModalProps {
@@ -209,31 +210,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             </div>
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(217, 119, 87, 0.35)' }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             type="submit"
-            disabled={loading}
-            className="w-full mt-2 flex items-center justify-center gap-2 bg-[#D97757] hover:bg-[#C86646] text-white py-2.5 rounded-xl text-xs font-semibold tracking-wide transition shadow-lg active:scale-[0.99] disabled:opacity-50"
+            variant="terracotta"
+            size="default"
+            isLoading={loading}
+            className="w-full mt-2 rounded-xl text-xs font-semibold tracking-wide shadow-lg"
           >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : isSignUp ? (
-              'Create Account'
-            ) : (
-              'Sign In'
-            )}
-          </motion.button>
+            {isSignUp ? 'Create Account' : 'Sign In'}
+          </Button>
         </form>
 
         <div className="mt-5 text-center">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="text-[11px] text-[#736E65] hover:text-[#A39D93] transition underline underline-offset-4"
+            className="text-[11px] text-[#736E65] hover:text-[#A39D93]"
           >
             Continue as Guest (Local Offline Mode)
-          </button>
+          </Button>
         </div>
       </motion.div>
     </div>

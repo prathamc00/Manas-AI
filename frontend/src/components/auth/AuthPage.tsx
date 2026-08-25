@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Lock, Mail, User as UserIcon, Eye, EyeOff, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Lock, Mail, User as UserIcon, Eye, EyeOff, Sparkles, ShieldCheck } from 'lucide-react';
 import { api } from '../../lib/api';
+import { Button } from '../ui/button';
 import type { User } from '../../types';
 
 interface AuthPageProps {
@@ -228,34 +229,28 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             </div>
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(217, 119, 87, 0.35)' }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             type="submit"
-            disabled={loading}
-            className="w-full mt-2 flex items-center justify-center gap-2 bg-[#D97757] hover:bg-[#C86646] text-white py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition shadow-lg shadow-[#D97757]/20 disabled:opacity-50"
+            variant="terracotta"
+            size="lg"
+            isLoading={loading}
+            className="w-full mt-2 rounded-xl text-xs uppercase tracking-wider font-semibold shadow-lg shadow-[#D97757]/20"
           >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : isSignUp ? (
-              'Create Account'
-            ) : (
-              'Sign In'
-            )}
-          </motion.button>
+            {isSignUp ? 'Create Account' : 'Sign In'}
+          </Button>
         </form>
 
         {/* Divider & Guest Option */}
         <div className="pt-2 border-t border-[#22211C] text-center space-y-3">
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             type="button"
+            variant="ghost"
+            size="default"
             onClick={onGuestMode}
-            className="text-xs text-[#A39D93] hover:text-[#ECE7DF] transition block w-full py-2 rounded-xl hover:bg-[#201F1A] border border-transparent hover:border-[#2B2A24]"
+            className="w-full text-xs text-[#A39D93] hover:text-[#ECE7DF] rounded-xl hover:bg-[#201F1A] border border-transparent hover:border-[#2B2A24]"
           >
             Skip for now & explore as Guest
-          </motion.button>
+          </Button>
         </div>
 
         {/* Privacy Note */}

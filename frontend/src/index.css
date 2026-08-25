@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-serif: "Newsreader", "Instrument Serif", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
 
 @layer base {
   :root {
@@ -129,4 +135,29 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #47443C;
+}
+
+/* ─── Hero Banner: staggered fade-slide-in animations ─── */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-in-1 {
+  animation: fadeSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.animate-fade-slide-in-2 {
+  animation: fadeSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+.animate-fade-slide-in-3 {
+  animation: fadeSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+}
+.animate-fade-slide-in-4 {
+  animation: fadeSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.48s both;
 }
