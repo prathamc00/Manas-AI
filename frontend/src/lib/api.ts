@@ -15,6 +15,23 @@ function getAuthHeaders(customHeaders: Record<string, string> = {}): Record<stri
   return headers;
 }
 
+function parseErrorDetail(errData: any, defaultMsg: string, status?: number): string {
+  if (status === 404) {
+    return 'Backend server is not reachable or endpoint was not found. Please ensure the backend server is running on port 8000.';
+  }
+  if (status === 502 || status === 503 || status === 504) {
+    return 'Cannot connect to backend server. Please ensure the backend is running on port 8000.';
+  }
+  if (!errData) return defaultMsg;
+  if (typeof errData === 'string') return errData;
+  if (typeof errData.detail === 'string') return errData.detail;
+  if (Array.isArray(errData.detail)) {
+    return errData.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
+  }
+  if (errData.message) return errData.message;
+  return defaultMsg;
+}
+
 export const api = {
   // Auth helpers
   getToken(): string | null {
@@ -31,37 +48,51 @@ export const api = {
 
   // Auth Endpoints
   async signup(data: { email: string; password: string; name?: string }): Promise<AuthResponse> {
-    const res = await fetch(`${API_BASE}/auth/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Sign up failed');
+    try {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(parseErrorDetail(err, 'Sign up failed', res.status));
+      }
+      const result: AuthResponse = await res.json();
+      if (result.access_token) {
+        localStorage.setItem(TOKEN_KEY, result.access_token);
+      }
+      return result;
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch')) {
+        throw err;
+      }
+      throw new Error('Could not connect to the backend server. Please ensure the backend is running.');
     }
-    const result: AuthResponse = await res.json();
-    if (result.access_token) {
-      localStorage.setItem(TOKEN_KEY, result.access_token);
-    }
-    return result;
   },
 
   async login(data: { email: string; password: string }): Promise<AuthResponse> {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Invalid email or password');
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(parseErrorDetail(err, 'Invalid email or password', res.status));
+      }
+      const result: AuthResponse = await res.json();
+      if (result.access_token) {
+        localStorage.setItem(TOKEN_KEY, result.access_token);
+      }
+      return result;
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch')) {
+        throw err;
+      }
+      throw new Error('Could not connect to the backend server. Please ensure the backend is running.');
     }
-    const result: AuthResponse = await res.json();
-    if (result.access_token) {
-      localStorage.setItem(TOKEN_KEY, result.access_token);
-    }
-    return result;
   },
 
   async getMe(): Promise<User | null> {

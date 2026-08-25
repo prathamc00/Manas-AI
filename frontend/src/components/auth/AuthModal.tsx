@@ -220,18 +220,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             {isSignUp ? 'Create Account' : 'Sign In'}
           </Button>
         </form>
-
-        <div className="mt-5 text-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="text-[11px] text-[#736E65] hover:text-[#A39D93]"
-          >
-            Continue as Guest (Local Offline Mode)
-          </Button>
-        </div>
       </motion.div>
     </div>
   );

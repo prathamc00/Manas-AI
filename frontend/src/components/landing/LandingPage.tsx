@@ -15,7 +15,6 @@ import { Button } from '../ui/button';
 interface LandingPageProps {
   onGetStarted: () => void;
   onSignIn: () => void;
-  onExploreGuest: () => void;
 }
 
 const cardVariants = {
@@ -34,7 +33,6 @@ const cardVariants = {
 export const LandingPage: React.FC<LandingPageProps> = ({
   onGetStarted,
   onSignIn,
-  onExploreGuest,
 }) => {
   const features = [
     {
@@ -117,7 +115,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         titleLine2="A Safe Sanctuary"
         description="MANAS is a compassionate AI companion powered by evidence-based CBT & ACT therapies. Reflect freely, track your emotional patterns, and build lasting resilience — all in complete privacy."
         primaryButtonText="Create Free Account"
-        secondaryButtonText="Explore as Guest"
+        secondaryButtonText="Sign In"
         partnersTitle="Built on industry-leading AI & security infrastructure"
         partners={[
           { name: 'Groq LLM', logoUrl: '', href: '#' },
@@ -243,15 +241,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full sm:w-auto rounded-full px-8 uppercase tracking-wider text-xs"
             >
-              Create Account
+              Create Free Account
             </Button>
             <Button
               variant="secondary"
               size="lg"
-              onClick={onExploreGuest}
+              onClick={onSignIn}
               className="w-full sm:w-auto rounded-full px-7 text-xs"
             >
-              Continue as Guest
+              Sign In
             </Button>
           </div>
         </motion.div>

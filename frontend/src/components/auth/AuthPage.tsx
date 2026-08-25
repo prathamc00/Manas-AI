@@ -9,14 +9,12 @@ interface AuthPageProps {
   initialMode?: 'signin' | 'signup';
   onBack: () => void;
   onSuccess: (user: User) => void;
-  onGuestMode: () => void;
 }
 
 export const AuthPage: React.FC<AuthPageProps> = ({
   initialMode = 'signup',
   onBack,
   onSuccess,
-  onGuestMode,
 }) => {
   const [isSignUp, setIsSignUp] = useState<boolean>(initialMode === 'signup');
   const [email, setEmail] = useState<string>('');
@@ -239,19 +237,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             {isSignUp ? 'Create Account' : 'Sign In'}
           </Button>
         </form>
-
-        {/* Divider & Guest Option */}
-        <div className="pt-2 border-t border-[#22211C] text-center space-y-3">
-          <Button
-            type="button"
-            variant="ghost"
-            size="default"
-            onClick={onGuestMode}
-            className="w-full text-xs text-[#A39D93] hover:text-[#ECE7DF] rounded-xl hover:bg-[#201F1A] border border-transparent hover:border-[#2B2A24]"
-          >
-            Skip for now & explore as Guest
-          </Button>
-        </div>
 
         {/* Privacy Note */}
         <div className="flex items-center justify-center space-x-1.5 text-[11px] text-[#545048] text-center">

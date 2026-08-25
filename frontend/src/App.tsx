@@ -252,9 +252,6 @@ export function App() {
               setAuthMode('signin');
               setViewState('auth');
             }}
-            onExploreGuest={() => {
-              setViewState('app');
-            }}
           />
         </motion.div>
       )}
@@ -273,13 +270,12 @@ export function App() {
             initialMode={authMode}
             onBack={() => setViewState('landing')}
             onSuccess={handleAuthSuccess}
-            onGuestMode={() => setViewState('app')}
           />
         </motion.div>
       )}
 
-      {/* View 3: Full Application Sanctuary */}
-      {(viewState === 'app' || currentUser) && (
+      {/* View 3: Full Application Sanctuary (Authenticated Only) */}
+      {(viewState === 'app' && currentUser) && (
         <motion.div
           key="app-workspace"
           variants={pageVariants}

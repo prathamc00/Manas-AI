@@ -33,7 +33,6 @@ interface ResponsiveHeroBannerProps {
   partners?: Partner[];
   onGetStarted?: () => void;
   onSignIn?: () => void;
-  onExploreGuest?: () => void;
 }
 
 const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
@@ -53,7 +52,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
   description =
     'MANAS is a compassionate AI companion engineered with clinical psychological reasoning. Reflect freely, examine thought distortions with kindness, and build emotional resilience in complete privacy.',
   primaryButtonText = 'Create Free Account',
-  secondaryButtonText = 'Explore as Guest',
+  secondaryButtonText = 'Sign In',
   partnersTitle = 'Built on robust AI & security architecture',
   partners = [
     { name: 'Groq LLM' },
@@ -64,7 +63,6 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
   ],
   onGetStarted,
   onSignIn,
-  onExploreGuest,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -244,8 +242,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
           <Button
             variant="glass"
             size="lg"
-            onClick={onExploreGuest || onSignIn}
-            leftIcon={<Play className="w-4 h-4 text-[#D97757]" />}
+            onClick={onSignIn}
             className="w-full sm:w-auto rounded-full px-6"
           >
             {secondaryButtonText}
