@@ -47,11 +47,25 @@ async def root_health():
         "env": settings.APP_ENV
     }
 
+from sqlalchemy import text
+from app.core.database import engine
+
 @app.get("/api/health")
 async def api_health():
+    db_status = "unknown"
+    db_type = "postgresql" if "postgres" in settings.DATABASE_URL else "sqlite"
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+            db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
     return {
-        "status": "healthy",
+        "status": "healthy" if db_status == "connected" else "degraded",
         "app": settings.APP_NAME,
         "provider": settings.AI_PROVIDER,
+        "database": db_status,
+        "database_type": db_type,
         "env": settings.APP_ENV
     }
