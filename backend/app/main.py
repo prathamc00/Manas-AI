@@ -4,11 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api import chat, sessions, memory, mood, goals, safety
+from app.api import auth, chat, sessions, memory, mood, goals, safety
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize SQLite database and tables
+    # Initialize database and tables
     await init_db()
     yield
 
@@ -19,7 +19,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for local React/Vite development
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,6 +29,7 @@ app.add_middleware(
 )
 
 # Include Routers
+app.include_router(auth.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(sessions.router, prefix="/api")
 app.include_router(memory.router, prefix="/api")
@@ -36,6 +37,8 @@ app.include_router(mood.router, prefix="/api")
 app.include_router(goals.router, prefix="/api")
 app.include_router(safety.router, prefix="/api")
 
+@app.get("/")
+@app.get("/health")
 @app.get("/api/health")
 async def health_check():
     return {

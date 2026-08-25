@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+# pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from typing import List
@@ -7,16 +8,20 @@ import uuid
 
 from app.core.database import get_db
 from app.core.config import settings
+from app.core.auth import get_current_user
 from app.database.models import Session, Message, User
 from app.schemas.session import SessionCreate, SessionOut, MessageOut
 
 router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
 @router.get("", response_model=List[SessionOut])
-async def list_sessions(user_id: str = settings.DEFAULT_USER_ID, db: AsyncSession = Depends(get_db)):
+async def list_sessions(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
     stmt = (
         select(Session)
-        .where(Session.user_id == user_id)
+        .where(Session.user_id == current_user.id)
         .order_by(desc(Session.started_at))
     )
     res = await db.execute(stmt)
@@ -42,15 +47,12 @@ async def list_sessions(user_id: str = settings.DEFAULT_USER_ID, db: AsyncSessio
     return out
 
 @router.post("", response_model=SessionOut)
-async def create_session(req: SessionCreate, db: AsyncSession = Depends(get_db)):
-    user_id = req.user_id or settings.DEFAULT_USER_ID
-    
-    # Ensure user exists
-    user_stmt = select(User).where(User.id == user_id)
-    user_res = await db.execute(user_stmt)
-    if not user_res.scalars().first():
-        db.add(User(id=user_id))
-        await db.flush()
+async def create_session(
+    req: SessionCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = current_user.id
 
     new_session = Session(
         id=str(uuid.uuid4()),

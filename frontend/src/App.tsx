@@ -9,11 +9,14 @@ import { GoalTracker } from './components/goals/GoalTracker';
 import { GroundingExercise } from './components/exercises/GroundingExercise';
 import { EmergencyModal } from './components/safety/EmergencyModal';
 import { DisguiseView } from './components/disguise/DisguiseView';
+import { AuthModal } from './components/auth/AuthModal';
 import { api } from './lib/api';
-import type { Session, Message, Memory, MoodEntry, Goal, SafetyResources } from './types';
+import type { Session, Message, Memory, MoodEntry, Goal, SafetyResources, User } from './types';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about'>('home');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -29,7 +32,7 @@ export function App() {
 
   // Initial load
   useEffect(() => {
-    loadAllData();
+    checkUserAndLoadData();
 
     // Listen for Escape key to toggle Quick Disguise
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,6 +43,16 @@ export function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  const checkUserAndLoadData = async () => {
+    try {
+      const user = await api.getMe();
+      setCurrentUser(user);
+    } catch {
+      setCurrentUser(null);
+    }
+    await loadAllData();
+  };
 
   const loadAllData = async () => {
     try {
@@ -54,14 +67,28 @@ export function App() {
       setMoodHistory(fetchedMoods);
       setGoals(fetchedGoals);
 
-      if (fetchedSessions.length > 0 && !activeSessionId) {
+      if (fetchedSessions.length > 0) {
         const latest = fetchedSessions[0];
         setActiveSessionId(latest.id);
         setMessages(latest.messages || []);
+      } else {
+        setActiveSessionId(null);
+        setMessages([]);
       }
     } catch (err) {
       console.error('Error loading data:', err);
     }
+  };
+
+  const handleAuthSuccess = async (user: User) => {
+    setCurrentUser(user);
+    await loadAllData();
+  };
+
+  const handleLogout = async () => {
+    api.logout();
+    setCurrentUser(null);
+    await loadAllData();
   };
 
   const handleSelectSession = async (id: string) => {
@@ -171,6 +198,9 @@ export function App() {
         onNewSession={handleNewSession}
         onOpenSafety={() => setIsSafetyOpen(true)}
         onTriggerDisguise={() => setIsDisguised(true)}
+        currentUser={currentUser}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onLogout={handleLogout}
         isMobileOpen={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
         isCollapsed={isSidebarCollapsed}
@@ -246,6 +276,12 @@ export function App() {
         isOpen={isSafetyOpen}
         onClose={() => setIsSafetyOpen(false)}
         resources={safetyResources}
+      />
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onSuccess={handleAuthSuccess}
       />
     </div>
   );

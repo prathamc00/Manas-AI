@@ -8,14 +8,16 @@ import {
   Wind, 
   ShieldAlert, 
   EyeOff, 
-  Plus,
-  Compass,
-  Info,
-  X,
-  PanelLeftClose,
-  PanelLeft
+  Plus, 
+  Compass, 
+  Info, 
+  X, 
+  PanelLeftClose, 
+  PanelLeft,
+  LogOut,
+  LogIn
 } from 'lucide-react';
-import type { Session } from '../types';
+import type { Session, User } from '../types';
 
 interface SidebarProps {
   activeTab: 'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about';
@@ -26,6 +28,9 @@ interface SidebarProps {
   onNewSession: () => void;
   onOpenSafety: () => void;
   onTriggerDisguise: () => void;
+  currentUser: User | null;
+  onOpenAuth: () => void;
+  onLogout: () => void;
   isMobileOpen?: boolean;
   onCloseMobile?: () => void;
   isCollapsed?: boolean;
@@ -41,6 +46,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNewSession,
   onOpenSafety,
   onTriggerDisguise,
+  currentUser,
+  onOpenAuth,
+  onLogout,
   isMobileOpen = false,
   onCloseMobile,
   isCollapsed = false,
@@ -203,6 +211,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
         )}
+
+        {/* User Account / Profile Box */}
+        <div className="p-2 border-t border-[#1F1E19] bg-[#12110E]">
+          {currentUser ? (
+            <div className="flex items-center justify-between p-2 rounded-xl bg-[#1A1915] border border-[#2B2A24]">
+              <div className="flex items-center space-x-2 truncate">
+                <div className="w-6 h-6 rounded-full bg-[#D97757]/20 text-[#D97757] flex items-center justify-center font-bold text-[10px] shrink-0">
+                  {currentUser.name ? currentUser.name[0].toUpperCase() : 'U'}
+                </div>
+                {!isCollapsed && (
+                  <div className="truncate">
+                    <p className="text-[11px] font-medium text-[#ECE7DF] truncate">
+                      {currentUser.name || currentUser.email || 'My Account'}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={onLogout}
+                title="Log Out"
+                className="text-[#736E65] hover:text-red-400 p-1 rounded-lg hover:bg-[#22211C] transition"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onOpenAuth}
+              title="Sign In / Register"
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center p-2' : 'justify-center space-x-1.5 px-2.5 py-1.5'} rounded-xl bg-[#D97757]/15 hover:bg-[#D97757]/25 text-[#D97757] border border-[#D97757]/30 text-xs font-medium transition active:scale-95`}
+            >
+              <LogIn className="w-3.5 h-3.5 shrink-0" />
+              {!isCollapsed && <span className="text-[11px]">Sign In / Register</span>}
+            </button>
+          )}
+        </div>
 
         {/* Bottom Safety */}
         <div className="p-2.5 border-t border-[#1F1E19] bg-[#0E0D0B] mt-auto">

@@ -7,26 +7,28 @@ import uuid
 
 from app.core.database import get_db
 from app.core.config import settings
+from app.core.auth import get_current_user
 from app.database.models import Goal, User
 from app.schemas.goal import GoalCreate, GoalUpdate, GoalOut
 
 router = APIRouter(prefix="/goals", tags=["Goals"])
 
 @router.get("", response_model=List[GoalOut])
-async def list_goals(user_id: str = settings.DEFAULT_USER_ID, db: AsyncSession = Depends(get_db)):
-    stmt = select(Goal).where(Goal.user_id == user_id).order_by(desc(Goal.created_at))
+async def list_goals(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    stmt = select(Goal).where(Goal.user_id == current_user.id).order_by(desc(Goal.created_at))
     res = await db.execute(stmt)
     return res.scalars().all()
 
 @router.post("", response_model=GoalOut)
-async def create_goal(req: GoalCreate, db: AsyncSession = Depends(get_db)):
-    user_id = req.user_id or settings.DEFAULT_USER_ID
-
-    user_stmt = select(User).where(User.id == user_id)
-    user_res = await db.execute(user_stmt)
-    if not user_res.scalars().first():
-        db.add(User(id=user_id))
-        await db.flush()
+async def create_goal(
+    req: GoalCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = current_user.id
 
     new_goal = Goal(
         id=str(uuid.uuid4()),

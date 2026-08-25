@@ -27,6 +27,24 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
+from sqlalchemy import text
+
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        
+        # SQLite schema migration for users table if needed
+        if "sqlite" in settings.DATABASE_URL:
+            try:
+                # Check columns in users table
+                result = await conn.execute(text("PRAGMA table_info(users)"))
+                columns = [row[1] for row in result.fetchall()]
+                
+                if "email" not in columns:
+                    await conn.execute(text("ALTER TABLE users ADD COLUMN email VARCHAR(255)"))
+                if "hashed_password" not in columns:
+                    await conn.execute(text("ALTER TABLE users ADD COLUMN hashed_password VARCHAR(255)"))
+                if "name" not in columns:
+                    await conn.execute(text("ALTER TABLE users ADD COLUMN name VARCHAR(255)"))
+            except Exception:
+                pass

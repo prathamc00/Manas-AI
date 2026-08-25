@@ -70,3 +70,18 @@ export interface SafetyResources {
   }>;
   safety_action: string;
 }
+
+export interface User {
+  id: string;
+  email?: string;
+  name?: string;
+  preferences?: Record<string, any>;
+  created_at?: string;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+  user: User;
+}
+

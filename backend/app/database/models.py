@@ -14,6 +14,9 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(String(64), primary_key=True, default=generate_uuid)
+    email = Column(String(255), unique=True, index=True, nullable=True)
+    hashed_password = Column(String(255), nullable=True)
+    name = Column(String(255), nullable=True)
     preferences = Column(JSON, default=dict)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     

@@ -6,6 +6,7 @@ import uuid
 
 from app.core.database import get_db
 from app.core.config import settings
+from app.core.auth import get_current_user
 from app.database.models import Memory, User
 from app.schemas.memory import MemoryCreate, MemoryUpdate, MemoryOut
 
@@ -15,10 +16,10 @@ router = APIRouter(prefix="/memories", tags=["Memories"])
 async def list_memories(
     category: Optional[str] = None,
     user_confirmed_only: Optional[bool] = None,
-    user_id: str = settings.DEFAULT_USER_ID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    query = select(Memory).where(Memory.user_id == user_id)
+    query = select(Memory).where(Memory.user_id == current_user.id)
     if category:
         query = query.where(Memory.category == category)
     if user_confirmed_only is not None:
@@ -29,15 +30,12 @@ async def list_memories(
     return res.scalars().all()
 
 @router.post("", response_model=MemoryOut)
-async def create_memory(req: MemoryCreate, db: AsyncSession = Depends(get_db)):
-    user_id = req.user_id or settings.DEFAULT_USER_ID
-    
-    # Ensure user exists
-    user_stmt = select(User).where(User.id == user_id)
-    user_res = await db.execute(user_stmt)
-    if not user_res.scalars().first():
-        db.add(User(id=user_id))
-        await db.flush()
+async def create_memory(
+    req: MemoryCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = current_user.id
 
     new_mem = Memory(
         id=str(uuid.uuid4()),

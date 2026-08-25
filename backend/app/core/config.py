@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/manas.db"
     
+    # JWT Authentication
+    JWT_SECRET_KEY: str = "manas-ai-super-secret-key-change-in-production-2026"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30  # 30 days
+    
     # Default User ID for single-user local build
     DEFAULT_USER_ID: str = "local-user-primary"
     
