@@ -37,10 +37,18 @@ app.include_router(mood.router, prefix="/api")
 app.include_router(goals.router, prefix="/api")
 app.include_router(safety.router, prefix="/api")
 
-@app.get("/")
 @app.get("/health")
+@app.get("/")
+async def root_health():
+    return {
+        "status": "healthy",
+        "app": settings.APP_NAME,
+        "provider": settings.AI_PROVIDER,
+        "env": settings.APP_ENV
+    }
+
 @app.get("/api/health")
-async def health_check():
+async def api_health():
     return {
         "status": "healthy",
         "app": settings.APP_NAME,
