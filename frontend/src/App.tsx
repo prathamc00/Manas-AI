@@ -10,13 +10,17 @@ import { GroundingExercise } from './components/exercises/GroundingExercise';
 import { EmergencyModal } from './components/safety/EmergencyModal';
 import { DisguiseView } from './components/disguise/DisguiseView';
 import { AuthModal } from './components/auth/AuthModal';
+import { LandingPage } from './components/landing/LandingPage';
+import { AuthPage } from './components/auth/AuthPage';
 import { api } from './lib/api';
 import type { Session, Message, Memory, MoodEntry, Goal, SafetyResources, User } from './types';
 
 export function App() {
+  const [viewState, setViewState] = useState<'landing' | 'auth' | 'app'>('landing');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
   const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about'>('home');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -47,7 +51,10 @@ export function App() {
   const checkUserAndLoadData = async () => {
     try {
       const user = await api.getMe();
-      setCurrentUser(user);
+      if (user) {
+        setCurrentUser(user);
+        setViewState('app');
+      }
     } catch {
       setCurrentUser(null);
     }
@@ -82,12 +89,15 @@ export function App() {
 
   const handleAuthSuccess = async (user: User) => {
     setCurrentUser(user);
+    setViewState('app');
+    setIsAuthModalOpen(false);
     await loadAllData();
   };
 
   const handleLogout = async () => {
     api.logout();
     setCurrentUser(null);
+    setViewState('landing');
     await loadAllData();
   };
 
@@ -187,6 +197,38 @@ export function App() {
     return <DisguiseView onUnlock={() => setIsDisguised(false)} />;
   }
 
+  // View 1: Marketing / Product Homepage with features and overview
+  if (viewState === 'landing' && !currentUser) {
+    return (
+      <LandingPage
+        onGetStarted={() => {
+          setAuthMode('signup');
+          setViewState('auth');
+        }}
+        onSignIn={() => {
+          setAuthMode('signin');
+          setViewState('auth');
+        }}
+        onExploreGuest={() => {
+          setViewState('app');
+        }}
+      />
+    );
+  }
+
+  // View 2: Dedicated Auth (Sign Up / Sign In) Page
+  if (viewState === 'auth' && !currentUser) {
+    return (
+      <AuthPage
+        initialMode={authMode}
+        onBack={() => setViewState('landing')}
+        onSuccess={handleAuthSuccess}
+        onGuestMode={() => setViewState('app')}
+      />
+    );
+  }
+
+  // View 3: Full Application Sanctuary
   return (
     <div className="flex h-screen h-[100dvh] w-screen overflow-hidden bg-[#181714]">
       <Sidebar
@@ -199,7 +241,7 @@ export function App() {
         onOpenSafety={() => setIsSafetyOpen(true)}
         onTriggerDisguise={() => setIsDisguised(true)}
         currentUser={currentUser}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
         isMobileOpen={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
@@ -279,8 +321,8 @@ export function App() {
       />
 
       <AuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
         onSuccess={handleAuthSuccess}
       />
     </div>

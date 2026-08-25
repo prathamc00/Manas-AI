@@ -1,82 +1,82 @@
-import React from 'react';
-import { 
-  Sparkles, 
-  MessageSquare, 
-  Heart, 
-  Brain, 
-  Target, 
-  Wind, 
-  ArrowRight, 
-  ShieldCheck, 
-  Clock, 
-  Menu
-} from 'lucide-react';
-import type { Session, Memory, MoodEntry, Goal } from '../../types';
+  import React from 'react';
+  import { 
+    Sparkles, 
+    MessageSquare, 
+    Heart, 
+    Brain, 
+    Target, 
+    Wind, 
+    ArrowRight, 
+    ShieldCheck, 
+    Clock, 
+    Menu
+  } from 'lucide-react';
+  import type { Session, Memory, MoodEntry, Goal } from '../../types';
 
-interface HomeViewProps {
-  sessions: Session[];
-  memories: Memory[];
-  moodHistory: MoodEntry[];
-  goals: Goal[];
-  onStartSession: () => void;
-  onNavigate: (tab: 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about') => void;
-  onOpenMobileMenu?: () => void;
-}
+  interface HomeViewProps {
+    sessions: Session[];
+    memories: Memory[];
+    moodHistory: MoodEntry[];
+    goals: Goal[];
+    onStartSession: () => void;
+    onNavigate: (tab: 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about') => void;
+    onOpenMobileMenu?: () => void;
+  }
 
-export const HomeView: React.FC<HomeViewProps> = ({
-  sessions,
-  memories,
-  moodHistory,
-  goals,
-  onStartSession,
-  onNavigate,
-  onOpenMobileMenu,
-}) => {
-  const latestMood = moodHistory[0];
-  const confirmedCount = memories.filter((m) => m.user_confirmed).length;
-  const activeGoalsCount = goals.filter((g) => g.status === 'in_progress').length;
+  export const HomeView: React.FC<HomeViewProps> = ({
+    sessions,
+    memories,
+    moodHistory,
+    goals,
+    onStartSession,
+    onNavigate,
+    onOpenMobileMenu,
+  }) => {
+    const latestMood = moodHistory[0];
+    const confirmedCount = memories.filter((m) => m.user_confirmed).length;
+    const activeGoalsCount = goals.filter((g) => g.status === 'in_progress').length;
 
-  const moodEmojis: { [key: number]: string } = {
-    1: '😔 Low',
-    2: '😐 Neutral',
-    3: '🙂 Grounded',
-    4: '😊 Energized',
-  };
+    const moodEmojis: { [key: number]: string } = {
+      1: '😔 Low',
+      2: '😐 Neutral',
+      3: '🙂 Grounded',
+      4: '😊 Energized',
+    };
 
-  return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-[#181714] text-[#ECE7DF] animate-fade-in select-text">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Top Header / Greeting */}
-        <div className="flex items-start justify-between">
-          <div className="space-y-1.5">
-            <div className="flex items-center space-x-2 text-[#D97757] text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Personal Reflection Sanctuary</span>
+    return (
+      <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-[#181714] text-[#ECE7DF] animate-fade-in select-text">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Top Header / Greeting */}
+          <div className="flex items-start justify-between">
+            <div className="space-y-1.5">
+              <div className="flex items-center space-x-2 text-[#D97757] text-xs font-semibold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Personal Reflection Sanctuary</span>
+              </div>
+              <h1 className="font-editorial text-2xl md:text-3xl font-semibold text-[#ECE7DF] tracking-tight">
+                Welcome back. Take a breath.
+              </h1>
+              <p className="text-xs text-[#A39D93] max-w-xl leading-relaxed">
+                MANAS is your private therapeutic companion — a mind that remembers your recurring themes, challenges unhelpful thought patterns with kindness, and preserves your context across sessions.
+              </p>
             </div>
-            <h1 className="font-editorial text-2xl md:text-3xl font-semibold text-[#ECE7DF] tracking-tight">
-              Welcome back. Take a breath.
-            </h1>
-            <p className="text-xs text-[#A39D93] max-w-xl leading-relaxed">
-              MANAS is your private therapeutic companion — a mind that remembers your recurring themes, challenges unhelpful thought patterns with kindness, and preserves your context across sessions.
-            </p>
+
+            {onOpenMobileMenu && (
+              <button
+                onClick={onOpenMobileMenu}
+                className="p-2 rounded-xl bg-[#22211C] border border-[#33312B] text-[#A39D93] md:hidden active:scale-95 shrink-0"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
-          {onOpenMobileMenu && (
-            <button
-              onClick={onOpenMobileMenu}
-              className="p-2 rounded-xl bg-[#22211C] border border-[#33312B] text-[#A39D93] md:hidden active:scale-95 shrink-0"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-
-        {/* Hero Card: Start Session Banner */}
-        <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#22211C] to-[#1D1C18] border border-[#33312B] shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden animate-slide-up">
-          <div className="space-y-2 max-w-lg z-10">
-            <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#D97757]/15 text-[#D97757] border border-[#D97757]/30">
-              Live Session
-            </span>
+          {/* Hero Card: Start Session Banner */}
+          <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#22211C] to-[#1D1C18] border border-[#33312B] shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden animate-slide-up">
+            <div className="space-y-2 max-w-lg z-10">
+              <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#D97757]/15 text-[#D97757] border border-[#D97757]/30">
+                Live Session
+              </span>
             <h2 className="font-editorial text-xl md:text-2xl font-semibold text-[#ECE7DF]">
               Ready to explore what's on your mind?
             </h2>
