@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/home/HomeView';
 import { AboutView } from './components/about/AboutView';
@@ -14,6 +15,18 @@ import { LandingPage } from './components/landing/LandingPage';
 import { AuthPage } from './components/auth/AuthPage';
 import { api } from './lib/api';
 import type { Session, Message, Memory, MoodEntry, Goal, SafetyResources, User } from './types';
+
+const pageVariants = {
+  initial: { opacity: 0, scale: 0.99 },
+  animate: { opacity: 1, scale: 1, transition: { duration: 0.25, ease: 'easeOut' as const } },
+  exit: { opacity: 0, scale: 0.99, transition: { duration: 0.2 } },
+};
+
+const tabVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease: 'easeOut' as const } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.15 } },
+};
 
 export function App() {
   const [viewState, setViewState] = useState<'landing' | 'auth' | 'app'>('landing');
@@ -197,135 +210,225 @@ export function App() {
     return <DisguiseView onUnlock={() => setIsDisguised(false)} />;
   }
 
-  // View 1: Marketing / Product Homepage with features and overview
-  if (viewState === 'landing' && !currentUser) {
-    return (
-      <LandingPage
-        onGetStarted={() => {
-          setAuthMode('signup');
-          setViewState('auth');
-        }}
-        onSignIn={() => {
-          setAuthMode('signin');
-          setViewState('auth');
-        }}
-        onExploreGuest={() => {
-          setViewState('app');
-        }}
-      />
-    );
-  }
-
-  // View 2: Dedicated Auth (Sign Up / Sign In) Page
-  if (viewState === 'auth' && !currentUser) {
-    return (
-      <AuthPage
-        initialMode={authMode}
-        onBack={() => setViewState('landing')}
-        onSuccess={handleAuthSuccess}
-        onGuestMode={() => setViewState('app')}
-      />
-    );
-  }
-
-  // View 3: Full Application Sanctuary
   return (
-    <div className="flex h-screen h-[100dvh] w-screen overflow-hidden bg-[#181714]">
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        sessions={sessions}
-        activeSessionId={activeSessionId}
-        onSelectSession={handleSelectSession}
-        onNewSession={handleNewSession}
-        onOpenSafety={() => setIsSafetyOpen(true)}
-        onTriggerDisguise={() => setIsDisguised(true)}
-        currentUser={currentUser}
-        onOpenAuth={() => setIsAuthModalOpen(true)}
-        onLogout={handleLogout}
-        isMobileOpen={isMobileMenuOpen}
-        onCloseMobile={() => setIsMobileMenuOpen(false)}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
-      />
-
-      <main className="flex-1 flex overflow-hidden bg-[#181714] relative">
-        {activeTab === 'home' && (
-          <HomeView
-            sessions={sessions}
-            memories={memories}
-            moodHistory={moodHistory}
-            goals={goals}
-            onStartSession={() => {
-              handleNewSession();
+    <AnimatePresence mode="wait">
+      {/* View 1: Marketing / Product Homepage with features and overview */}
+      {viewState === 'landing' && !currentUser && (
+        <motion.div
+          key="landing-page"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="w-full min-h-screen"
+        >
+          <LandingPage
+            onGetStarted={() => {
+              setAuthMode('signup');
+              setViewState('auth');
             }}
-            onNavigate={(tab) => setActiveTab(tab)}
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+            onSignIn={() => {
+              setAuthMode('signin');
+              setViewState('auth');
+            }}
+            onExploreGuest={() => {
+              setViewState('app');
+            }}
           />
-        )}
+        </motion.div>
+      )}
 
-        {activeTab === 'about' && (
-          <AboutView
-            onBackToHome={() => setActiveTab('home')}
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+      {/* View 2: Dedicated Auth (Sign Up / Sign In) Page */}
+      {viewState === 'auth' && !currentUser && (
+        <motion.div
+          key="auth-page"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="w-full min-h-screen"
+        >
+          <AuthPage
+            initialMode={authMode}
+            onBack={() => setViewState('landing')}
+            onSuccess={handleAuthSuccess}
+            onGuestMode={() => setViewState('app')}
           />
-        )}
+        </motion.div>
+      )}
 
-        {activeTab === 'chat' && (
-          <ChatArea
-            messages={messages}
-            isLoading={isLoading}
-            onSendMessage={handleSendMessage}
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+      {/* View 3: Full Application Sanctuary */}
+      {(viewState === 'app' || currentUser) && (
+        <motion.div
+          key="app-workspace"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="flex h-screen h-[100dvh] w-screen overflow-hidden bg-[#181714]"
+        >
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            sessions={sessions}
+            activeSessionId={activeSessionId}
+            onSelectSession={handleSelectSession}
+            onNewSession={handleNewSession}
+            onOpenSafety={() => setIsSafetyOpen(true)}
+            onTriggerDisguise={() => setIsDisguised(true)}
+            currentUser={currentUser}
+            onOpenAuth={() => setIsAuthModalOpen(true)}
+            onLogout={handleLogout}
+            isMobileOpen={isMobileMenuOpen}
+            onCloseMobile={() => setIsMobileMenuOpen(false)}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
           />
-        )}
 
-        {activeTab === 'checkin' && (
-          <DailyCheckIn
-            moodHistory={moodHistory}
-            onLogMood={handleLogMood}
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          <main className="flex-1 flex overflow-hidden bg-[#181714] relative">
+            <AnimatePresence mode="wait">
+              {activeTab === 'home' && (
+                <motion.div
+                  key="tab-home"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <HomeView
+                    sessions={sessions}
+                    memories={memories}
+                    moodHistory={moodHistory}
+                    goals={goals}
+                    onStartSession={() => {
+                      handleNewSession();
+                    }}
+                    onNavigate={(tab) => setActiveTab(tab)}
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'about' && (
+                <motion.div
+                  key="tab-about"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <AboutView
+                    onBackToHome={() => setActiveTab('home')}
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'chat' && (
+                <motion.div
+                  key="tab-chat"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <ChatArea
+                    messages={messages}
+                    isLoading={isLoading}
+                    onSendMessage={handleSendMessage}
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'checkin' && (
+                <motion.div
+                  key="tab-checkin"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <DailyCheckIn
+                    moodHistory={moodHistory}
+                    onLogMood={handleLogMood}
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'memory' && (
+                <motion.div
+                  key="tab-memory"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <MemoryVault
+                    memories={memories}
+                    onConfirmMemory={handleConfirmMemory}
+                    onDeleteMemory={handleDeleteMemory}
+                    onCreateMemory={handleCreateMemory}
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'goals' && (
+                <motion.div
+                  key="tab-goals"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <GoalTracker
+                    goals={goals}
+                    onCreateGoal={handleCreateGoal}
+                    onUpdateGoal={handleUpdateGoal}
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'grounding' && (
+                <motion.div
+                  key="tab-grounding"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex-1 flex overflow-hidden w-full"
+                >
+                  <GroundingExercise
+                    onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </main>
+
+          <EmergencyModal
+            isOpen={isSafetyOpen}
+            onClose={() => setIsSafetyOpen(false)}
+            resources={safetyResources}
           />
-        )}
 
-        {activeTab === 'memory' && (
-          <MemoryVault
-            memories={memories}
-            onConfirmMemory={handleConfirmMemory}
-            onDeleteMemory={handleDeleteMemory}
-            onCreateMemory={handleCreateMemory}
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+            onSuccess={handleAuthSuccess}
           />
-        )}
-
-        {activeTab === 'goals' && (
-          <GoalTracker
-            goals={goals}
-            onCreateGoal={handleCreateGoal}
-            onUpdateGoal={handleUpdateGoal}
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-          />
-        )}
-
-        {activeTab === 'grounding' && (
-          <GroundingExercise
-            onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-          />
-        )}
-      </main>
-
-      <EmergencyModal
-        isOpen={isSafetyOpen}
-        onClose={() => setIsSafetyOpen(false)}
-        resources={safetyResources}
-      />
-
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={handleAuthSuccess}
-      />
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
