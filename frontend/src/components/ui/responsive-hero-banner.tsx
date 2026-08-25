@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, ArrowRight, Play, Menu, X, Sparkles } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Menu, X, Sparkles } from 'lucide-react';
 import { Button } from './button';
 
 interface NavLink {
