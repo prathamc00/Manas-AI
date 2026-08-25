@@ -88,7 +88,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-[#12110E] text-[#ECE7DF] flex flex-col selection:bg-[#D97757]/30 selection:text-white font-sans">
+    <div className="min-h-screen w-full overflow-y-auto bg-[#12110E] text-[#ECE7DF] flex flex-col selection:bg-[#D97757]/30 selection:text-white font-sans">
       {/* Navigation Bar */}
       <header className="sticky top-0 z-40 bg-[#12110E]/90 backdrop-blur-md border-b border-[#22211C]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

@@ -55,7 +55,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#12110E] text-[#ECE7DF] flex flex-col justify-between p-4 sm:p-6 select-text">
+    <div className="min-h-screen w-full overflow-y-auto bg-[#12110E] text-[#ECE7DF] flex flex-col justify-between p-4 sm:p-6 select-text">
       {/* Top Header / Back Link */}
       <header className="max-w-5xl mx-auto w-full flex items-center justify-between py-2">
         <button
