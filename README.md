@@ -281,11 +281,7 @@ I warmly welcome contributions from the community! Whether you want to add new t
 **MANAS is an engineered AI companion designed for personal reflection, emotional exploration, and somatic mindfulness. It is NOT a licensed healthcare provider, medical device, or replacement for clinical psychotherapy, psychiatric treatment, or emergency crisis intervention.**
 
 If you or someone you know is in acute distress or experiencing thoughts of self-harm, please reach out to emergency services immediately:
-- **India**: Call **112** or **KIRAN Mental Health Helpline (1800-599-0019)** / **Tele-MANAS (14416)**
-- **United States & Canada**: Call or text **988** (Suicide & Crisis Lifeline)
-- **United Kingdom**: Call **111** (NHS Mental Health Services) or **999**
-- **International**: Find your local crisis line at [Befrienders Worldwide](https://www.befrienders.org/) or [Find A Helpline](https://findahelpline.com/)
-
+- **India**: Call **112** 
 ---
 
 ## 📄 License
