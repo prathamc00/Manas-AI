@@ -1,7 +1,7 @@
 import type { Session, Memory, MoodEntry, Goal, SafetyResources, User, AuthResponse } from '../types';
 
-const API_BASE = '/api';
 const TOKEN_KEY = 'manas_auth_token';
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '/api';
 
 function getAuthHeaders(customHeaders: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = {
@@ -16,13 +16,11 @@ function getAuthHeaders(customHeaders: Record<string, string> = {}): Record<stri
 }
 
 function parseErrorDetail(errData: any, defaultMsg: string, status?: number): string {
-  if (status === 404) {
-    return 'Backend server is not reachable or endpoint was not found. Please ensure the backend server is running on port 8000.';
+  if (!errData) {
+    if (status === 404) return 'The requested API endpoint was not found. Please verify backend routing.';
+    if (status === 502 || status === 503 || status === 504) return 'Cannot connect to backend server. Gateway/proxy error.';
+    return defaultMsg;
   }
-  if (status === 502 || status === 503 || status === 504) {
-    return 'Cannot connect to backend server. Please ensure the backend is running on port 8000.';
-  }
-  if (!errData) return defaultMsg;
   if (typeof errData === 'string') return errData;
   if (typeof errData.detail === 'string') return errData.detail;
   if (Array.isArray(errData.detail)) {
@@ -30,6 +28,17 @@ function parseErrorDetail(errData: any, defaultMsg: string, status?: number): st
   }
   if (errData.message) return errData.message;
   return defaultMsg;
+}
+
+async function request(path: string, options: RequestInit = {}): Promise<Response> {
+  const url = `${API_BASE_URL}${path}`;
+
+  try {
+    const res = await fetch(url, options);
+    return res;
+  } catch (netErr) {
+    throw new Error('Unable to connect to the backend server. Please verify your internet connection and backend status.');
+  }
 }
 
 export const api = {
@@ -48,51 +57,37 @@ export const api = {
 
   // Auth Endpoints
   async signup(data: { email: string; password: string; name?: string }): Promise<AuthResponse> {
-    try {
-      const res = await fetch(`${API_BASE}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(parseErrorDetail(err, 'Sign up failed', res.status));
-      }
-      const result: AuthResponse = await res.json();
-      if (result.access_token) {
-        localStorage.setItem(TOKEN_KEY, result.access_token);
-      }
-      return result;
-    } catch (err: any) {
-      if (err.message && !err.message.includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Could not connect to the backend server. Please ensure the backend is running.');
+    const res = await request('/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(parseErrorDetail(err, 'Sign up failed', res.status));
     }
+    const result: AuthResponse = await res.json();
+    if (result.access_token) {
+      localStorage.setItem(TOKEN_KEY, result.access_token);
+    }
+    return result;
   },
 
   async login(data: { email: string; password: string }): Promise<AuthResponse> {
-    try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(parseErrorDetail(err, 'Invalid email or password', res.status));
-      }
-      const result: AuthResponse = await res.json();
-      if (result.access_token) {
-        localStorage.setItem(TOKEN_KEY, result.access_token);
-      }
-      return result;
-    } catch (err: any) {
-      if (err.message && !err.message.includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Could not connect to the backend server. Please ensure the backend is running.');
+    const res = await request('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(parseErrorDetail(err, 'Invalid email or password', res.status));
     }
+    const result: AuthResponse = await res.json();
+    if (result.access_token) {
+      localStorage.setItem(TOKEN_KEY, result.access_token);
+    }
+    return result;
   },
 
   async getMe(): Promise<User | null> {
@@ -100,7 +95,7 @@ export const api = {
     if (!token) return null;
 
     try {
-      const res = await fetch(`${API_BASE}/auth/me`, {
+      const res = await request('/auth/me', {
         headers: getAuthHeaders(),
       });
       if (!res.ok) {
@@ -132,7 +127,7 @@ export const api = {
     crisis_resources?: any;
     created_at: string;
   }> {
-    const res = await fetch(`${API_BASE}/chat`, {
+    const res = await request('/chat', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(params),
@@ -143,7 +138,7 @@ export const api = {
 
   // Sessions
   async getSessions(): Promise<Session[]> {
-    const res = await fetch(`${API_BASE}/sessions`, {
+    const res = await request('/sessions', {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch sessions');
@@ -151,7 +146,7 @@ export const api = {
   },
 
   async getSession(sessionId: string): Promise<Session> {
-    const res = await fetch(`${API_BASE}/sessions/${sessionId}`, {
+    const res = await request(`/sessions/${sessionId}`, {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch session');
@@ -159,7 +154,7 @@ export const api = {
   },
 
   async createSession(title?: string): Promise<Session> {
-    const res = await fetch(`${API_BASE}/sessions`, {
+    const res = await request('/sessions', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ title }),
@@ -170,10 +165,10 @@ export const api = {
 
   // Memories
   async getMemories(userConfirmedOnly?: boolean): Promise<Memory[]> {
-    const url = userConfirmedOnly !== undefined
-      ? `${API_BASE}/memories?user_confirmed_only=${userConfirmedOnly}`
-      : `${API_BASE}/memories`;
-    const res = await fetch(url, {
+    const path = userConfirmedOnly !== undefined
+      ? `/memories?user_confirmed_only=${userConfirmedOnly}`
+      : '/memories';
+    const res = await request(path, {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch memories');
@@ -186,7 +181,7 @@ export const api = {
     is_inferred?: boolean;
     user_confirmed?: boolean;
   }): Promise<Memory> {
-    const res = await fetch(`${API_BASE}/memories`, {
+    const res = await request('/memories', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -196,7 +191,7 @@ export const api = {
   },
 
   async updateMemory(id: string, updates: Partial<Memory>): Promise<Memory> {
-    const res = await fetch(`${API_BASE}/memories/${id}`, {
+    const res = await request(`/memories/${id}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify(updates),
@@ -206,7 +201,7 @@ export const api = {
   },
 
   async deleteMemory(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/memories/${id}`, {
+    const res = await request(`/memories/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });
@@ -215,7 +210,7 @@ export const api = {
 
   // Mood
   async getMoodHistory(): Promise<MoodEntry[]> {
-    const res = await fetch(`${API_BASE}/mood`, {
+    const res = await request('/mood', {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch mood history');
@@ -228,7 +223,7 @@ export const api = {
     energy: number;
     notes?: string;
   }): Promise<MoodEntry> {
-    const res = await fetch(`${API_BASE}/mood`, {
+    const res = await request('/mood', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -239,7 +234,7 @@ export const api = {
 
   // Goals
   async getGoals(): Promise<Goal[]> {
-    const res = await fetch(`${API_BASE}/goals`, {
+    const res = await request('/goals', {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch goals');
@@ -251,7 +246,7 @@ export const api = {
     description?: string;
     strategies?: string[];
   }): Promise<Goal> {
-    const res = await fetch(`${API_BASE}/goals`, {
+    const res = await request('/goals', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -261,7 +256,7 @@ export const api = {
   },
 
   async updateGoal(id: string, updates: Partial<Goal> & { progress_note?: string }): Promise<Goal> {
-    const res = await fetch(`${API_BASE}/goals/${id}`, {
+    const res = await request(`/goals/${id}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify(updates),
@@ -272,7 +267,7 @@ export const api = {
 
   // Safety
   async getSafetyResources(): Promise<SafetyResources> {
-    const res = await fetch(`${API_BASE}/safety/resources`, {
+    const res = await request('/safety/resources', {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch safety resources');
