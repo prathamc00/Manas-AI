@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌿 MANAS (मानस) — AI Mental-Health & Therapeutic Companion
+# 🌿 MANAS — AI Mental-Health & Therapeutic Companion
 
 > **A mind that makes room. A companion that holds context gently and stays beside the pace you set.**
 
@@ -32,14 +32,14 @@ Built with an organic, calming **Botanical Serif** design philosophy, MANAS crea
 
 | Feature | Description |
 |---|---|
-| **🧠 Multi-Strategy Therapeutic Router** | Dynamically adapts between **Active Listening**, **Socratic CBT**, **Acceptance & Commitment (ACT)**, **Somatic Grounding**, and **Practical Guidance**. |
-| **🛡️ Pre-Flight Crisis Safety Gate** | Multi-layer safety engine combining keyword heuristics and independent LLM safety classification. Instantly triggers localized emergency helplines (India 112/KIRAN/Tele-MANAS, US 988, UK 111, Canada 988). |
-| **🌱 Dual-Tier Contextual Memory** | Segregates AI inferences into unconfirmed vs. user-confirmed notes. The user has full autonomy to accept, edit, or delete any contextual memory. |
-| **📊 7-Day Emotional Pulse Tracker** | Interactive daily check-ins logging mood, stress, and energy with longitudinal pulse charting. |
-| **🧘 Somatic Toolkit** | Real-time interactive **Box Breathing (4-4-4-4)** visualizer and **5-4-3-2-1 Sensory Grounding** exercise. |
-| **🎯 Growth Notes & Goals** | Manage personal micro-commitments and therapeutic goals with strategy trackers. |
-| **⚡ Quick-Exit Disguise (`Esc`)** | Single-keystroke privacy mask that instantly transforms the UI into a realistic business spreadsheet. |
-| **📱 Mobile-First Native Experience** | Ergonomic bottom navigation, smooth spring gestures, and safe-area notch handling. |
+| ** Multi-Strategy Therapeutic Router** | Dynamically adapts between **Active Listening**, **Socratic CBT**, **Acceptance & Commitment (ACT)**, **Somatic Grounding**, and **Practical Guidance**. |
+| **Pre-Flight Crisis Safety Gate** | Multi-layer safety engine combining keyword heuristics and independent LLM safety classification. Instantly triggers localized emergency helplines (India 112/KIRAN/Tele-MANAS, US 988, UK 111, Canada 988). |
+| **Dual-Tier Contextual Memory** | Segregates AI inferences into unconfirmed vs. user-confirmed notes. The user has full autonomy to accept, edit, or delete any contextual memory. |
+| **7-Day Emotional Pulse Tracker** | Interactive daily check-ins logging mood, stress, and energy with longitudinal pulse charting. |
+| **a Somatic Toolkit** | Real-time interactive **Box Breathing (4-4-4-4)** visualizer and **5-4-3-2-1 Sensory Grounding** exercise. |
+| **Growth Notes & Goals** | Manage personal micro-commitments and therapeutic goals with strategy trackers. |
+| **Quick-Exit Disguise (`Esc`)** | Single-keystroke privacy mask that instantly transforms the UI into a realistic business spreadsheet. |
+| **Mobile-First Native Experience** | Ergonomic bottom navigation, smooth spring gestures, and safe-area notch handling. |
 
 ---
 
@@ -239,7 +239,7 @@ Manas-AI/
 
 ## 🤝 Open for Contribution
 
-We warmly welcome contributions from the community! Whether you want to add new therapeutic modalities, improve safety classifications, enhance UI micro-interactions, or fix bugs, your help makes MANAS better for everyone.
+I warmly welcome contributions from the community! Whether you want to add new therapeutic modalities, improve safety classifications, enhance UI micro-interactions, or fix bugs, your help makes MANAS better for everyone.
 
 ### How to Contribute:
 
@@ -296,8 +296,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-Made with 🌿 and care for slower, more honest conversations.
+Made with Lve and care for slower, more honest conversations.
 
-[⬆ Back to Top](#-manas-मानस--ai-mental-health--therapeutic-companion)
+[⬆ Back to Top](#-manas-ai-mental-health--therapeutic-companion)
 
 </div>
