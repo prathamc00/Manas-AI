@@ -163,6 +163,24 @@ export const api = {
     return res.json();
   },
 
+  async updateSession(sessionId: string, title: string): Promise<Session> {
+    const res = await request(`/sessions/${sessionId}`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ title }),
+    });
+    if (!res.ok) throw new Error('Failed to update session');
+    return res.json();
+  },
+
+  async deleteSession(sessionId: string): Promise<void> {
+    const res = await request(`/sessions/${sessionId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to delete session');
+  },
+
   // Memories
   async getMemories(userConfirmedOnly?: boolean): Promise<Memory[]> {
     const path = userConfirmedOnly !== undefined

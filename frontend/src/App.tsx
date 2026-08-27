@@ -11,6 +11,7 @@ import { GroundingExercise } from './components/exercises/GroundingExercise';
 import { EmergencyModal } from './components/safety/EmergencyModal';
 import { DisguiseView } from './components/disguise/DisguiseView';
 import { AuthModal } from './components/auth/AuthModal';
+import { RecentChatsModal } from './components/chat/RecentChatsModal';
 import { LandingPage } from './components/landing/LandingPage';
 import { AuthPage } from './components/auth/AuthPage';
 import { api } from './lib/api';
@@ -35,6 +36,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about'>('home');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isRecentChatsOpen, setIsRecentChatsOpen] = useState<boolean>(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -140,6 +142,34 @@ export function App() {
       setActiveTab('chat');
     } catch (err) {
       console.error('Error creating session:', err);
+    }
+  };
+
+  const handleDeleteSession = async (id: string) => {
+    try {
+      await api.deleteSession(id);
+      const remaining = sessions.filter((s) => s.id !== id);
+      setSessions(remaining);
+      if (activeSessionId === id) {
+        if (remaining.length > 0) {
+          setActiveSessionId(remaining[0].id);
+          setMessages(remaining[0].messages || []);
+        } else {
+          setActiveSessionId(null);
+          setMessages([]);
+        }
+      }
+    } catch (err) {
+      console.error('Error deleting session:', err);
+    }
+  };
+
+  const handleRenameSession = async (id: string, newTitle: string) => {
+    try {
+      const updated = await api.updateSession(id, newTitle);
+      setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, title: updated.title } : s)));
+    } catch (err) {
+      console.error('Error renaming session:', err);
     }
   };
 
@@ -300,6 +330,9 @@ export function App() {
             onCloseMobile={() => setIsMobileMenuOpen(false)}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+            onOpenRecentChats={() => setIsRecentChatsOpen(true)}
+            onDeleteSession={handleDeleteSession}
+            onRenameSession={handleRenameSession}
           />
 
           <main className="flex-1 flex overflow-hidden bg-[#181714] relative">
@@ -323,6 +356,8 @@ export function App() {
                     }}
                     onNavigate={(tab) => setActiveTab(tab)}
                     onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                    onSelectSession={handleSelectSession}
+                    onOpenRecentChats={() => setIsRecentChatsOpen(true)}
                   />
                 </motion.div>
               )}
@@ -357,6 +392,10 @@ export function App() {
                     isLoading={isLoading}
                     onSendMessage={handleSendMessage}
                     onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                    onOpenRecentChats={() => setIsRecentChatsOpen(true)}
+                    onNewSession={handleNewSession}
+                    activeSessionTitle={sessions.find((s) => s.id === activeSessionId)?.title}
+                    sessionCount={sessions.length}
                   />
                 </motion.div>
               )}
@@ -442,6 +481,20 @@ export function App() {
             isOpen={isAuthModalOpen}
             onClose={() => setIsAuthModalOpen(false)}
             onSuccess={handleAuthSuccess}
+          />
+
+          <RecentChatsModal
+            isOpen={isRecentChatsOpen}
+            onClose={() => setIsRecentChatsOpen(false)}
+            sessions={sessions}
+            activeSessionId={activeSessionId}
+            onSelectSession={(id) => {
+              handleSelectSession(id);
+              setActiveTab('chat');
+            }}
+            onNewSession={handleNewSession}
+            onDeleteSession={handleDeleteSession}
+            onRenameSession={handleRenameSession}
           />
         </motion.div>
       )}

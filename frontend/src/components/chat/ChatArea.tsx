@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Sparkles, Quote, Info, Menu } from 'lucide-react';
+import { ArrowUp, Sparkles, Quote, Info, Menu, Clock, Plus } from 'lucide-react';
 import type { Message } from '../../types';
 
 interface ChatAreaProps {
@@ -7,6 +7,10 @@ interface ChatAreaProps {
   isLoading: boolean;
   onSendMessage: (text: string, mode: string) => void;
   onOpenMobileMenu?: () => void;
+  onOpenRecentChats?: () => void;
+  onNewSession?: () => void;
+  activeSessionTitle?: string;
+  sessionCount?: number;
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
@@ -14,6 +18,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   isLoading,
   onSendMessage,
   onOpenMobileMenu,
+  onOpenRecentChats,
+  onNewSession,
+  activeSessionTitle,
+  sessionCount = 0,
 }) => {
   const [inputText, setInputText] = useState('');
   const [activeMode, setActiveMode] = useState<string>('standard');
@@ -56,43 +64,78 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   return (
     <div className="flex-1 flex flex-col h-full bg-[#181714] text-[#ECE7DF] relative select-text">
       {/* Floating Header */}
-      <header className="h-14 border-b border-[#262520] px-4 md:px-8 flex items-center justify-between bg-[#181714]/90 backdrop-blur-md z-10 shrink-0">
-        <div className="flex items-center space-x-3">
+      <header className="h-14 border-b border-[#262520] px-3 md:px-6 flex items-center justify-between bg-[#181714]/90 backdrop-blur-md z-10 shrink-0 gap-2">
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
           {onOpenMobileMenu && (
             <button
               onClick={onOpenMobileMenu}
-              className="p-1.5 rounded-lg text-[#A39D93] hover:text-[#ECE7DF] hover:bg-[#22211C] md:hidden transition active:scale-95"
+              className="p-1.5 rounded-lg text-[#A39D93] hover:text-[#ECE7DF] hover:bg-[#22211C] md:hidden transition active:scale-95 shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
           )}
 
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-[#D97757]" />
-            <span className="text-xs font-semibold text-[#ECE7DF]">Therapeutic Dialogue</span>
+          <div className="flex items-center space-x-2 min-w-0">
+            <div className="w-2 h-2 rounded-full bg-[#D97757] shrink-0" />
+            <div className="min-w-0">
+              <span className="text-xs font-semibold text-[#ECE7DF] truncate block max-w-[140px] sm:max-w-[220px]">
+                {activeSessionTitle || 'Therapeutic Dialogue'}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Mode Selector Pill Bar */}
-        <div className="flex items-center space-x-1 bg-[#1F1E19] p-0.5 md:p-1 rounded-xl border border-[#2B2A24] overflow-x-auto max-w-[220px] sm:max-w-none">
-          {[
-            { id: 'standard', label: 'Balanced' },
-            { id: 'venting', label: 'Just Venting' },
-            { id: 'socratic', label: 'Socratic CBT' },
-            { id: 'advice', label: 'Action Steps' },
-          ].map((mode) => (
+        {/* Header Right Actions */}
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+          {/* Recent Chats Button */}
+          {onOpenRecentChats && (
             <button
-              key={mode.id}
-              onClick={() => setActiveMode(mode.id)}
-              className={`px-2.5 md:px-3 py-1 text-[11px] md:text-xs font-medium rounded-lg transition duration-150 whitespace-nowrap active:scale-95 ${
-                activeMode === mode.id
-                  ? 'bg-[#2A2923] text-[#ECE7DF] shadow-sm font-semibold'
-                  : 'text-[#736E65] hover:text-[#ECE7DF]'
-              }`}
+              onClick={onOpenRecentChats}
+              title="Recent Conversations History"
+              className="flex items-center space-x-1 px-2 sm:px-2.5 py-1 rounded-xl bg-[#22211C] hover:bg-[#2A2923] border border-[#33312B] hover:border-[#D97757]/40 text-[#ECE7DF] text-[11px] font-medium transition active:scale-95"
             >
-              {mode.label}
+              <Clock className="w-3.5 h-3.5 text-[#D97757]" />
+              <span className="hidden sm:inline">Recent Chats</span>
+              {sessionCount > 0 && (
+                <span className="text-[10px] bg-[#161512] px-1.5 py-0.2 rounded-full text-[#A39D93] border border-[#2B2A24]">
+                  {sessionCount}
+                </span>
+              )}
             </button>
-          ))}
+          )}
+
+          {/* Quick New Session Button */}
+          {onNewSession && (
+            <button
+              onClick={onNewSession}
+              title="New Chat Session"
+              className="p-1.5 rounded-xl bg-[#22211C] hover:bg-[#2A2923] border border-[#33312B] hover:border-[#D97757]/40 text-[#ECE7DF] transition active:scale-95"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#D97757]" />
+            </button>
+          )}
+
+          {/* Mode Selector Pill Bar */}
+          <div className="flex items-center space-x-0.5 bg-[#1F1E19] p-0.5 rounded-xl border border-[#2B2A24] overflow-x-auto max-w-[180px] sm:max-w-none">
+            {[
+              { id: 'standard', label: 'Balanced' },
+              { id: 'venting', label: 'Venting' },
+              { id: 'socratic', label: 'Socratic' },
+              { id: 'advice', label: 'Action' },
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => setActiveMode(mode.id)}
+                className={`px-2 sm:px-2.5 py-1 text-[10px] sm:text-xs font-medium rounded-lg transition duration-150 whitespace-nowrap active:scale-95 ${
+                  activeMode === mode.id
+                    ? 'bg-[#2A2923] text-[#ECE7DF] shadow-sm font-semibold'
+                    : 'text-[#736E65] hover:text-[#ECE7DF]'
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 

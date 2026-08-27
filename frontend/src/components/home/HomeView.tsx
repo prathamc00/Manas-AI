@@ -22,6 +22,8 @@
     onStartSession: () => void;
     onNavigate: (tab: 'chat' | 'checkin' | 'memory' | 'goals' | 'grounding' | 'about') => void;
     onOpenMobileMenu?: () => void;
+    onSelectSession?: (id: string) => void;
+    onOpenRecentChats?: () => void;
   }
 
   export const HomeView: React.FC<HomeViewProps> = ({
@@ -32,6 +34,8 @@
     onStartSession,
     onNavigate,
     onOpenMobileMenu,
+    onSelectSession,
+    onOpenRecentChats,
   }) => {
     const latestMood = moodHistory[0];
     const confirmedCount = memories.filter((m) => m.user_confirmed).length;
@@ -145,6 +149,72 @@
             <p className="text-[10px] text-[#A39D93]">Habits in progress</p>
           </div>
         </div>
+
+        {/* Recent Conversations Section */}
+        {sessions.length > 0 && (
+          <div className="space-y-3 animate-slide-up">
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center space-x-2">
+                <Clock className="w-3.5 h-3.5 text-[#D97757]" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#736E65]">
+                  Recent Conversations
+                </h3>
+              </div>
+              {onOpenRecentChats && (
+                <button
+                  onClick={onOpenRecentChats}
+                  className="text-xs text-[#D97757] hover:underline font-medium flex items-center space-x-1"
+                >
+                  <span>View all ({sessions.length})</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {sessions.slice(0, 3).map((session) => {
+                const lastMsg = session.messages && session.messages.length > 0
+                  ? session.messages[session.messages.length - 1]
+                  : null;
+                const formattedDate = new Date(session.started_at).toLocaleDateString([], {
+                  month: 'short',
+                  day: 'numeric',
+                });
+
+                return (
+                  <div
+                    key={session.id}
+                    onClick={() => {
+                      if (onSelectSession) onSelectSession(session.id);
+                      onNavigate('chat');
+                    }}
+                    className="p-4 rounded-2xl bg-[#22211C] hover:bg-[#2A2923] border border-[#33312B] hover:border-[#D97757]/40 text-left transition duration-200 cursor-pointer group flex flex-col justify-between space-y-3"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between text-[10px] text-[#736E65] mb-1.5">
+                        <span>{formattedDate}</span>
+                        <span>{session.messages?.length || 0} messages</span>
+                      </div>
+                      <h4 className="text-xs font-semibold text-[#ECE7DF] group-hover:text-[#D97757] transition truncate">
+                        {session.title || 'Untitled Session'}
+                      </h4>
+                      {lastMsg && (
+                        <p className="text-[11px] text-[#A39D93] mt-1 line-clamp-2 leading-relaxed">
+                          "{lastMsg.content}"
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-[#2C2A24] text-[11px] text-[#D97757] font-medium">
+                      <span>Resume dialogue</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Quick Launch Features */}
         <div className="space-y-3">

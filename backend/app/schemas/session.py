@@ -16,6 +16,9 @@ class SessionCreate(BaseModel):
     title: Optional[str] = "New Reflection Session"
     user_id: Optional[str] = None
 
+class SessionUpdate(BaseModel):
+    title: Optional[str] = None
+
 class SessionOut(BaseModel):
     id: str
     user_id: str

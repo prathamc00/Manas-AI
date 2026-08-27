@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 # pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, delete
 from typing import List
 from datetime import datetime, timezone
 import uuid
@@ -10,7 +10,7 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.core.auth import get_current_user
 from app.database.models import Session, Message, User
-from app.schemas.session import SessionCreate, SessionOut, MessageOut
+from app.schemas.session import SessionCreate, SessionUpdate, SessionOut, MessageOut
 
 router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
@@ -108,3 +108,45 @@ async def end_session(session_id: str, db: AsyncSession = Depends(get_db)):
     session.ended_at = datetime.now(timezone.utc)
     await db.commit()
     return await get_session(session_id, db)
+
+@router.patch("/{session_id}", response_model=SessionOut)
+async def update_session(
+    session_id: str,
+    req: SessionUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    stmt = select(Session).where(Session.id == session_id, Session.user_id == current_user.id)
+    res = await db.execute(stmt)
+    session = res.scalars().first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if req.title is not None:
+        session.title = req.title.strip() or "Untitled Session"
+
+    await db.commit()
+    return await get_session(session_id, db)
+
+@router.delete("/{session_id}")
+async def delete_session(
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    stmt = select(Session).where(Session.id == session_id, Session.user_id == current_user.id)
+    res = await db.execute(stmt)
+    session = res.scalars().first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Delete related messages first
+    del_msg_stmt = delete(Message).where(Message.session_id == session_id)
+    await db.execute(del_msg_stmt)
+
+    # Delete session
+    del_session_stmt = delete(Session).where(Session.id == session_id)
+    await db.execute(del_session_stmt)
+    await db.commit()
+
+    return {"status": "success", "message": "Session deleted"}

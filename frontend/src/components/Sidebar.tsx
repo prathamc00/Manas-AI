@@ -9,13 +9,16 @@ import {
   ShieldAlert, 
   EyeOff, 
   Plus, 
-  Compass, 
   Info, 
   X, 
   PanelLeftClose, 
   PanelLeft,
   LogOut,
-  LogIn
+  LogIn,
+  Clock,
+  Trash2,
+  Edit3,
+  Check
 } from 'lucide-react';
 import type { Session, User } from '../types';
 
@@ -35,6 +38,9 @@ interface SidebarProps {
   onCloseMobile?: () => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  onOpenRecentChats?: () => void;
+  onDeleteSession?: (id: string) => Promise<void>;
+  onRenameSession?: (id: string, newTitle: string) => Promise<void>;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -52,8 +58,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen = false,
   onCloseMobile,
   isCollapsed = false,
-  onToggleCollapse
+  onToggleCollapse,
+  onOpenRecentChats,
+  onDeleteSession,
+  onRenameSession,
 }) => {
+  const [editingSessionId, setEditingSessionId] = React.useState<string | null>(null);
+  const [editTitle, setEditTitle] = React.useState<string>('');
+  const [deletingSessionId, setDeletingSessionId] = React.useState<string | null>(null);
+
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'chat', label: 'Chat Session', icon: MessageSquare },
@@ -67,6 +80,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleNavClick = (tabId: string) => {
     setActiveTab(tabId as any);
     if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleSaveRename = async (id: string, e: React.MouseEvent | React.FormEvent) => {
+    e.stopPropagation();
+    if (onRenameSession && editTitle.trim()) {
+      try {
+        await onRenameSession(id, editTitle.trim());
+      } finally {
+        setEditingSessionId(null);
+      }
+    } else {
+      setEditingSessionId(null);
+    }
+  };
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (deletingSessionId !== id) {
+      setDeletingSessionId(id);
+      return;
+    }
+    if (onDeleteSession) {
+      try {
+        await onDeleteSession(id);
+      } finally {
+        setDeletingSessionId(null);
+      }
+    }
+  };
+
+  const formatShortDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays === 0 && now.getDate() === d.getDate()) {
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    if (diffDays <= 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
   };
 
   return (
@@ -181,32 +234,115 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Recent Sessions List */}
         {!isCollapsed && (
           <div className="flex-1 overflow-y-auto px-2 py-2.5 mt-2 border-t border-[#1F1E19]">
-            <div className="flex items-center space-x-1.5 px-2 mb-1.5 text-[10px] uppercase font-semibold tracking-wider text-[#736E65]">
-              <Compass className="w-3 h-3 text-[#D97757]" />
-              <span>Sessions</span>
+            <div className="flex items-center justify-between px-2 mb-2">
+              <div className="flex items-center space-x-1.5 text-[10px] uppercase font-semibold tracking-wider text-[#736E65]">
+                <Clock className="w-3 h-3 text-[#D97757]" />
+                <span>Recent Chats</span>
+              </div>
+              {onOpenRecentChats && sessions.length > 0 && (
+                <button
+                  onClick={onOpenRecentChats}
+                  className="text-[10px] text-[#D97757] hover:underline font-medium"
+                >
+                  View All
+                </button>
+              )}
             </div>
 
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {sessions.length === 0 ? (
-                <p className="text-[11px] text-[#736E65] px-2 py-3 text-center italic">No history</p>
+                <p className="text-[11px] text-[#736E65] px-2 py-3 text-center italic">No conversations yet</p>
               ) : (
-                sessions.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => {
-                      onSelectSession(s.id);
-                      setActiveTab('chat');
-                      if (onCloseMobile) onCloseMobile();
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs truncate transition duration-150 block active:scale-[0.99] ${
-                      activeSessionId === s.id && activeTab === 'chat'
-                        ? 'bg-[#22211C] text-[#ECE7DF] font-medium border border-[#33312B]'
-                        : 'text-[#A39D93] hover:bg-[#1A1915] hover:text-[#ECE7DF]'
-                    }`}
-                  >
-                    <span className="truncate">{s.title || 'Session'}</span>
-                  </button>
-                ))
+                sessions.slice(0, 10).map((s) => {
+                  const isActive = activeSessionId === s.id && activeTab === 'chat';
+                  const isEditing = editingSessionId === s.id;
+                  const isDeleting = deletingSessionId === s.id;
+
+                  return (
+                    <div
+                      key={s.id}
+                      onClick={() => {
+                        if (!isEditing) {
+                          onSelectSession(s.id);
+                          setActiveTab('chat');
+                          if (onCloseMobile) onCloseMobile();
+                        }
+                      }}
+                      className={`group flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition duration-150 cursor-pointer ${
+                        isActive
+                          ? 'bg-[#22211C] text-[#ECE7DF] font-medium border border-[#33312B]'
+                          : 'text-[#A39D93] hover:bg-[#1A1915] hover:text-[#ECE7DF]'
+                      }`}
+                    >
+                      {isEditing ? (
+                        <div className="flex items-center space-x-1.5 w-full" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="text"
+                            autoFocus
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSaveRename(s.id, e)}
+                            className="bg-[#0E0D0B] border border-[#D97757]/70 rounded px-1.5 py-0.5 text-xs text-[#ECE7DF] focus:outline-none w-full"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => handleSaveRename(s.id, e)}
+                            className="p-1 text-[#D97757] hover:text-[#E38769]"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setEditingSessionId(null); }}
+                            className="p-1 text-[#736E65] hover:text-[#ECE7DF]"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="truncate flex-1 min-w-0 pr-1">
+                            <span className="truncate block text-xs">{s.title || 'Session'}</span>
+                            <span className="text-[9px] text-[#736E65] block leading-tight">
+                              {formatShortDate(s.started_at)}
+                            </span>
+                          </div>
+
+                          {/* Hover Actions */}
+                          <div className="flex items-center space-x-0.5 opacity-0 group-hover:opacity-100 transition shrink-0">
+                            {onRenameSession && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingSessionId(s.id);
+                                  setEditTitle(s.title || 'Session');
+                                }}
+                                title="Rename"
+                                className="p-1 text-[#736E65] hover:text-[#ECE7DF] rounded hover:bg-[#2A2923]"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                              </button>
+                            )}
+
+                            {onDeleteSession && (
+                              <button
+                                onClick={(e) => handleDelete(s.id, e)}
+                                title={isDeleting ? 'Click to confirm delete' : 'Delete'}
+                                className={`p-1 rounded ${
+                                  isDeleting
+                                    ? 'bg-red-500/20 text-red-400 opacity-100'
+                                    : 'text-[#736E65] hover:text-red-400 hover:bg-[#2A2923]'
+                                }`}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
