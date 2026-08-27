@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="groundGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4a5f4f"/>
+      <stop offset="70%" stop-color="#2d3a31"/>
+      <stop offset="100%" stop-color="#19231c"/>
+    </radialGradient>
+    <linearGradient id="stoneGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9ea89b"/>
+      <stop offset="100%" stop-color="#5a6657"/>
+    </linearGradient>
+    <linearGradient id="stoneGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dccfc2"/>
+      <stop offset="100%" stop-color="#a69482"/>
+    </linearGradient>
+    <linearGradient id="terraStone" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dda18f"/>
+      <stop offset="100%" stop-color="#c27b66"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="250" fill="url(#groundGlow)"/>
+  <!-- Concentric Zen Ripples -->
+  <circle cx="250" cy="250" r="210" fill="none" stroke="#8c9a84" stroke-width="1.5" opacity="0.3"/>
+  <circle cx="250" cy="250" r="160" fill="none" stroke="#8c9a84" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="250" cy="250" r="110" fill="none" stroke="#8c9a84" stroke-width="1.5" opacity="0.5"/>
+  <!-- Smooth River Stones Stack -->
+  <ellipse cx="250" cy="320" rx="90" ry="38" fill="url(#stoneGrad1)"/>
+  <ellipse cx="250" cy="265" rx="68" ry="30" fill="url(#stoneGrad2)"/>
+  <ellipse cx="250" cy="218" rx="48" ry="22" fill="url(#terraStone)"/>
+  <ellipse cx="250" cy="180" rx="28" ry="14" fill="#f5eee6"/>
+</svg>

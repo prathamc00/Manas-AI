@@ -55,6 +55,14 @@ export const api = {
     localStorage.removeItem(TOKEN_KEY);
   },
 
+  logout() {
+    this.clearToken();
+  },
+
+  async getCurrentUser(): Promise<User | null> {
+    return this.getMe();
+  },
+
   // Auth Endpoints
   async signup(data: { email: string; password: string; name?: string }): Promise<AuthResponse> {
     const res = await request('/auth/signup', {
@@ -106,10 +114,6 @@ export const api = {
     } catch {
       return null;
     }
-  },
-
-  logout() {
-    localStorage.removeItem(TOKEN_KEY);
   },
 
   // Chat
@@ -216,6 +220,10 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to update memory');
     return res.json();
+  },
+
+  async confirmMemory(id: string): Promise<Memory> {
+    return this.updateMemory(id, { user_confirmed: true });
   },
 
   async deleteMemory(id: string): Promise<void> {

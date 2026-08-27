@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <linearGradient id="memBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#edf1eb"/>
+      <stop offset="100%" stop-color="#d5ddd2"/>
+    </linearGradient>
+    <linearGradient id="jarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#e2dad1"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="30" fill="url(#memBg)"/>
+  <!-- Ceramic Jar -->
+  <path d="M190 190 L310 190 Q340 190 350 250 L360 370 Q360 400 320 400 L180 400 Q140 400 140 370 L150 250 Q160 190 190 190 Z" fill="url(#jarGrad)" stroke="#c4b9ad" stroke-width="2"/>
+  <!-- Cork Lid -->
+  <rect x="180" y="160" width="140" height="30" rx="6" fill="#c27b66"/>
+  <!-- Memory Tags inside / floating -->
+  <rect x="200" y="240" width="100" height="36" rx="8" fill="#2d3a31"/>
+  <circle cx="215" cy="258" r="4" fill="#8c9a84"/>
+  <rect x="230" y="254" width="55" height="8" rx="4" fill="#f9f8f4"/>
+
+  <rect x="180" y="300" width="120" height="36" rx="8" fill="#8c9a84"/>
+  <circle cx="195" cy="318" r="4" fill="#f9f8f4"/>
+  <rect x="210" y="314" width="70" height="8" rx="4" fill="#f9f8f4"/>
+
+  <!-- Sprouting Botanical Twig -->
+  <path d="M250 160 Q220 90 270 50" fill="none" stroke="#2d3a31" stroke-width="3" stroke-linecap="round"/>
+  <path d="M260 90 Q290 80 290 100 Q270 105 260 90 Z" fill="#8c9a84"/>
+  <path d="M245 110 Q215 105 220 125 Q235 125 245 110 Z" fill="#7e8e79"/>
+</svg>

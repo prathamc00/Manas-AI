@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="600" height="700">
+  <defs>
+    <linearGradient id="bgWarm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5eee6"/>
+      <stop offset="50%" stop-color="#e9ddd2"/>
+      <stop offset="100%" stop-color="#d8c5b5"/>
+    </linearGradient>
+    <linearGradient id="botanicalGreen" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2d3a31"/>
+      <stop offset="100%" stop-color="#7e8e79"/>
+    </linearGradient>
+    <linearGradient id="terraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c27b66"/>
+      <stop offset="100%" stop-color="#9e5542"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="700" fill="url(#bgWarm)"/>
+  <!-- Arch Outline -->
+  <path d="M120 700 L120 280 C120 180, 200 100, 300 100 C400 100, 480 180, 480 280 L480 700 Z" fill="#fff" opacity="0.85"/>
+  <!-- Plant Leaves in vase -->
+  <path d="M300 480 Q220 360 210 240 Q250 250 290 380 Z" fill="url(#botanicalGreen)"/>
+  <path d="M300 480 Q380 340 400 220 Q360 250 310 370 Z" fill="url(#botanicalGreen)" opacity="0.9"/>
+  <path d="M300 480 Q300 300 300 160 Q320 240 305 380 Z" fill="#8c9a84"/>
+  <!-- Ceramic Vase -->
+  <path d="M260 480 Q240 540 250 590 L350 590 Q360 540 340 480 Z" fill="url(#terraGrad)"/>
+  <!-- Sunlight Window Beam -->
+  <polygon points="180,100 360,100 520,700 260,700" fill="#fff" opacity="0.25"/>
+  <!-- Journal on table -->
+  <rect x="360" y="550" width="130" height="70" rx="6" fill="#2d3a31" transform="rotate(-10 360 550)"/>
+  <rect x="365" y="555" width="120" height="60" rx="4" fill="#f9f8f4" transform="rotate(-10 360 550)"/>
+</svg>

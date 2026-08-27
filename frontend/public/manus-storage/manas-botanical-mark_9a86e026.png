@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8c9a84"/>
+      <stop offset="50%" stop-color="#2d3a31"/>
+      <stop offset="100%" stop-color="#1b241e"/>
+    </linearGradient>
+    <linearGradient id="warmAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c27b66"/>
+      <stop offset="100%" stop-color="#dda18f"/>
+    </linearGradient>
+  </defs>
+  <!-- Background soft circle -->
+  <circle cx="60" cy="60" r="54" fill="#e9ddd2" opacity="0.6"/>
+  <!-- Stylized Botanical Emblem / M shape -->
+  <path d="M32 82 C32 45, 52 28, 60 22 C68 28, 88 45, 88 82 C80 65, 68 58, 60 58 C52 58, 40 65, 32 82 Z" fill="url(#leafGrad)"/>
+  <!-- Central Botanical Vein / Sprout -->
+  <path d="M60 22 Q60 55 60 88" stroke="#f9f8f4" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Warm Terracotta Seed/Accent -->
+  <circle cx="60" cy="74" r="5" fill="url(#warmAccent)"/>
+</svg>
