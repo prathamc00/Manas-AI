@@ -1570,6 +1570,28 @@ export default function Home() {
         </footer>
       </main>
 
+      {/* 🌿 Ergonomic Mobile Bottom Navigation Bar */}
+      <nav className="app-mobile-bottom-nav">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = view === item.id;
+          return (
+            <button
+              key={item.id}
+              className={isActive ? "active" : ""}
+              onClick={() => go(item.id)}
+              aria-label={item.label}
+            >
+              <Icon size={20} strokeWidth={isActive ? 2.2 : 1.5} />
+              <span>{item.id === "today" ? "Today" : item.id === "talk" ? "Talk" : item.id === "memory" ? "Garden" : item.id === "practice" ? "Notes" : "Ground"}</span>
+              {item.id === "memory" && inferredMemories.length > 0 && (
+                <span className="badge">{inferredMemories.length}</span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
       {/* Recent Chats / History Drawer Modal */}
       <AnimatePresence>
         {historyOpen && (

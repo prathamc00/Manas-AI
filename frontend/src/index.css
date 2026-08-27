@@ -12,10 +12,12 @@
 @layer base {
   * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
   html {
     background: var(--paper);
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     min-width: 320px;
@@ -24,6 +26,7 @@
     background: var(--paper);
     font-family: "Source Sans 3", Arial, sans-serif;
     overflow-x: hidden;
+    touch-action: manipulation;
   }
   /* Custom Smooth Scrollbar */
   ::-webkit-scrollbar {
@@ -52,9 +55,11 @@
   }
   button, input, textarea {
     font: inherit;
+    touch-action: manipulation;
   }
   button {
     cursor: pointer;
+    user-select: none;
   }
   button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible {
     outline: 2px solid var(--sage);
@@ -331,4 +336,82 @@
   .mood-grid small { display: none; }
   .pulse-chart { gap: 4px; }
   .pulse-chart i { width: 12px; }
+}
+
+/* 🌿 Mobile Bottom Navigation Bar */
+.app-mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(62px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(249, 248, 244, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    z-index: 50;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 24px rgba(45, 58, 49, 0.08);
+  }
+
+  .app-mobile-bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: #798177;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 12px;
+    position: relative;
+    transition: color 0.2s var(--ease-organic), transform 0.2s var(--ease-organic);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app-mobile-bottom-nav button.active {
+    color: var(--forest);
+    font-weight: 700;
+  }
+
+  .app-mobile-bottom-nav button.active svg {
+    color: var(--terracotta);
+    transform: scale(1.12);
+  }
+
+  .app-mobile-bottom-nav button .badge {
+    position: absolute;
+    top: 2px;
+    right: 6px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Extra space for content so it doesn't get covered by the bottom bar */
+  .app-content {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .app-footer {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
 }
