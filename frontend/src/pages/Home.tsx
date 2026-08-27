@@ -30,6 +30,12 @@ import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { api } from "../lib/api";
 import type { Goal, Memory, Message, MoodEntry, Session, User } from "../types";
+import {
+  BotanicalMark,
+  BotanicalHeroIllustration,
+  BotanicalMemoryIllustration,
+  BotanicalGroundingIllustration,
+} from "../components/BotanicalIllustrations";
 
 /** MANAS-AI — Botanical / Organic Serif private companion workspace connected to live FastAPI backend. */
 
@@ -60,13 +66,7 @@ const approaches = [
 ];
 
 function Mark({ small = false }: { small?: boolean }) {
-  return (
-    <img
-      className={small ? "app-mark app-mark-small" : "app-mark"}
-      src="/manus-storage/manas-botanical-mark_9a86e026.png"
-      alt="MANAS"
-    />
-  );
+  return <BotanicalMark size={small ? 28 : 36} className="shrink-0" />;
 }
 
 function PillButton({
@@ -513,10 +513,7 @@ export default function Home() {
           </div>
         </div>
         <div className="app-hero-art">
-          <img
-            src="/manus-storage/manas-botanical-hero_6d953861.png"
-            alt="Warm botanical nook with a journal"
-          />
+          <BotanicalHeroIllustration />
           <div className="hero-art-caption">
             <Sparkles size={15} strokeWidth={1.5} />
             <span>
@@ -668,10 +665,7 @@ export default function Home() {
           </PillButton>
         </div>
         <div className="grounding-art">
-          <img
-            src="/manus-storage/manas-botanical-grounding_b4a208f6.png"
-            alt="River stones and fern for grounding"
-          />
+          <BotanicalGroundingIllustration />
           <i />
           <i />
         </div>
@@ -893,10 +887,7 @@ export default function Home() {
 
       <section className="memory-hero">
         <div className="memory-hero-art">
-          <img
-            src="/manus-storage/manas-botanical-memory_71e81ed9.png"
-            alt="Ceramic vessel with botanical memory tags"
-          />
+          <BotanicalMemoryIllustration />
         </div>
         <div>
           <Eyebrow>THE AGREEMENT</Eyebrow>
@@ -1228,10 +1219,7 @@ export default function Home() {
             </PillButton>
           </div>
           <div className={`breath-image ${breathing ? "breathing" : ""}`}>
-            <img
-              src="/manus-storage/manas-botanical-grounding_b4a208f6.png"
-              alt="Spiral of river stones and fern"
-            />
+            <BotanicalGroundingIllustration />
             <i />
             <i />
             <span>

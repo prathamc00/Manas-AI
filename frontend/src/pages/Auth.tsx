@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { api } from "../lib/api";
+import { BotanicalMark, BotanicalHeroIllustration } from "../components/BotanicalIllustrations";
 
 /** MANAS-AI — Botanical / Organic Serif accessible email and password authentication interface. */
 
@@ -59,7 +60,7 @@ export default function Auth({ mode }: { mode: "login" | "signup" }) {
     <main className="auth-page">
       <section className="auth-visual">
         <button className="auth-brand" onClick={() => setLocation("/")}>
-          <img src="/manus-storage/manas-botanical-mark_9a86e026.png" alt="MANAS" />
+          <BotanicalMark size={36} />
           <b>MANAS</b>
         </button>
         <div className="auth-visual-copy">
@@ -68,7 +69,7 @@ export default function Auth({ mode }: { mode: "login" | "signup" }) {
           <p>MANAS is built for reflection, not performance. You’re always in control of what stays.</p>
         </div>
         <div className="auth-image-arch">
-          <img src="/manus-storage/manas-botanical-hero_6d953861.png" alt="Warm botanical nook with a journal" />
+          <BotanicalHeroIllustration />
         </div>
         <div className="auth-protection">
           <LockKeyhole size={16} strokeWidth={1.5} />
