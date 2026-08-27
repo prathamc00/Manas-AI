@@ -465,33 +465,44 @@ export default function Home() {
   }, [moodHistory]);
 
   /* ========================================================================== */
-  /* TAB: TODAY (HOME)                                                         */
+  /* TAB: TODAY (HOME DASHBOARD)                                               */
   /* ========================================================================== */
   const today = (
     <motion.div
       className="app-content"
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
-      <PageHeading
-        eyebrow={new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }).toUpperCase()}
-        title={
-          <>
-            Welcome back,<br />
-            <em>{currentUser?.name || "Friend"}.</em>
-          </>
-        }
-        intro="There’s no need to arrive polished. What feels most present right now?"
-        action={
-          <span className="today-detail">
-            A softer place to land<br />
-            <b>{sessions.length} recorded dialogue{sessions.length === 1 ? "" : "s"}</b>
-          </span>
-        }
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.05 }}
+      >
+        <PageHeading
+          eyebrow={new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }).toUpperCase()}
+          title={
+            <>
+              Welcome back,<br />
+              <em>{currentUser?.name || "Friend"}.</em>
+            </>
+          }
+          intro="There’s no need to arrive polished. What feels most present right now?"
+          action={
+            <span className="today-detail">
+              A softer place to land<br />
+              <b>{sessions.length} recorded dialogue{sessions.length === 1 ? "" : "s"}</b>
+            </span>
+          }
+        />
+      </motion.div>
 
-      <section className="app-hero">
+      <motion.section
+        className="app-hero"
+        initial={{ opacity: 0, scale: 0.97, y: 18 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="app-hero-copy">
           <Eyebrow>YOUR SPACE, AT YOUR PACE</Eyebrow>
           <h2>
@@ -504,28 +515,42 @@ export default function Home() {
               : "MANAS is here to listen, reflect, and hold your context without judgment."}
           </p>
           <div>
-            <PillButton className="forest-fill" onClick={() => go("talk")}>
-              Continue our conversation <ArrowRight size={17} strokeWidth={1.5} />
-            </PillButton>
-            <PillButton className="sage-outline" onClick={() => go("ground")}>
-              <TimerReset size={16} strokeWidth={1.5} /> Ground for a minute
-            </PillButton>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <PillButton className="forest-fill" onClick={() => go("talk")}>
+                Continue our conversation <ArrowRight size={17} strokeWidth={1.5} />
+              </PillButton>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <PillButton className="sage-outline" onClick={() => go("ground")}>
+                <TimerReset size={16} strokeWidth={1.5} /> Ground for a minute
+              </PillButton>
+            </motion.div>
           </div>
         </div>
         <div className="app-hero-art">
           <BotanicalHeroIllustration />
-          <div className="hero-art-caption">
+          <motion.div
+            className="hero-art-caption"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+          >
             <Sparkles size={15} strokeWidth={1.5} />
             <span>
               <b>A gentle return</b>
               One small moment is enough.
             </span>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       <section className="today-grid">
-        <article className="checkin-panel">
+        <motion.article
+          className="checkin-panel"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="checkin-head">
             <div>
               <Eyebrow>DAILY CHECK-IN</Eyebrow>
@@ -540,10 +565,15 @@ export default function Home() {
             </span>
           </div>
           <div className="mood-grid" role="radiogroup" aria-label="Select your mood">
-            {moods.map((item) => (
-              <button
+            {moods.map((item, idx) => (
+              <motion.button
                 type="button"
                 key={item.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.25 + idx * 0.06 }}
+                whileHover={{ y: -3, scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
                 className={mood === item.id ? "active" : ""}
                 onClick={() => {
                   setMood(item.id);
@@ -554,8 +584,16 @@ export default function Home() {
                 <span>{item.icon}</span>
                 <b>{item.label}</b>
                 <small>{item.detail}</small>
-                {mood === item.id && <Check size={14} strokeWidth={1.5} />}
-              </button>
+                {mood === item.id && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  >
+                    <Check size={14} strokeWidth={1.5} />
+                  </motion.span>
+                )}
+              </motion.button>
             ))}
           </div>
           <label className="note-input">
@@ -566,20 +604,27 @@ export default function Home() {
               placeholder="A note for yourself, if you want…"
             />
           </label>
-          <PillButton className="forest-fill full" onClick={holdCheckin}>
-            {checkedIn ? (
-              <>
-                <Check size={16} /> Held for today
-              </>
-            ) : (
-              <>
-                Hold this check-in <ArrowRight size={16} strokeWidth={1.5} />
-              </>
-            )}
-          </PillButton>
-        </article>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <PillButton className="forest-fill full" onClick={holdCheckin}>
+              {checkedIn ? (
+                <>
+                  <Check size={16} /> Held for today
+                </>
+              ) : (
+                <>
+                  Hold this check-in <ArrowRight size={16} strokeWidth={1.5} />
+                </>
+              )}
+            </PillButton>
+          </motion.div>
+        </motion.article>
 
-        <article className="pulse-panel">
+        <motion.article
+          className="pulse-panel"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="pulse-head">
             <div>
               <Eyebrow>THE LAST SEVEN DAYS</Eyebrow>
@@ -600,7 +645,12 @@ export default function Home() {
           <div className="pulse-chart">
             {pulseBars.map((bar, index) => (
               <span key={index} className={index === pulseBars.length - 1 ? "today-bar" : ""}>
-                <i style={{ height: `${bar.height}%` }} />
+                <motion.i
+                  initial={{ height: "0%" }}
+                  animate={{ height: `${bar.height}%` }}
+                  transition={{ duration: 0.75, delay: 0.3 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ display: "block" }}
+                />
                 <small>{bar.label}</small>
               </span>
             ))}
@@ -613,46 +663,82 @@ export default function Home() {
               See your patterns <ChevronRight size={16} strokeWidth={1.5} />
             </button>
           </div>
-        </article>
+        </motion.article>
       </section>
 
       <section className="path-section">
-        <div className="path-intro">
+        <motion.div
+          className="path-intro"
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55 }}
+        >
           <Eyebrow>A SMALL WAY FORWARD</Eyebrow>
           <h2>
             Choose a <em>door,</em><br />
             not a destination.
           </h2>
-        </div>
+        </motion.div>
         <div className="path-cards">
-          <button onClick={() => go("talk")}>
-            <MessageCircleHeart size={23} strokeWidth={1.5} />
-            <span>
-              <small>CONVERSATION</small>
-              <b>Say what’s on your mind</b>
-            </span>
-            <ArrowRight size={18} strokeWidth={1.5} />
-          </button>
-          <button onClick={() => go("memory")}>
-            <Brain size={23} strokeWidth={1.5} />
-            <span>
-              <small>MEMORY GARDEN</small>
-              <b>Review what MANAS holds</b>
-            </span>
-            <ArrowRight size={18} strokeWidth={1.5} />
-          </button>
-          <button onClick={() => go("practice")}>
-            <Leaf size={23} strokeWidth={1.5} />
-            <span>
-              <small>GROWTH NOTE</small>
-              <b>Practice one boundary</b>
-            </span>
-            <ArrowRight size={18} strokeWidth={1.5} />
-          </button>
+          {[
+            {
+              id: "talk",
+              icon: MessageCircleHeart,
+              label: "CONVERSATION",
+              title: "Say what’s on your mind",
+              delay: 0.1,
+            },
+            {
+              id: "memory",
+              icon: Brain,
+              label: "MEMORY GARDEN",
+              title: "Review what MANAS holds",
+              delay: 0.2,
+            },
+            {
+              id: "practice",
+              icon: Leaf,
+              label: "GROWTH NOTE",
+              title: "Practice one boundary",
+              delay: 0.3,
+            },
+          ].map((door, idx) => {
+            const Icon = door.icon;
+            return (
+              <motion.button
+                key={door.id}
+                onClick={() => go(door.id as View)}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: door.delay, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{
+                  y: idx === 1 ? 14 : -7,
+                  boxShadow: "0 22px 38px -20px rgba(45,58,49,.28)",
+                  transition: { duration: 0.3 },
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Icon size={23} strokeWidth={1.5} />
+                <span>
+                  <small>{door.label}</small>
+                  <b>{door.title}</b>
+                </span>
+                <ArrowRight size={18} strokeWidth={1.5} />
+              </motion.button>
+            );
+          })}
         </div>
       </section>
 
-      <section className="grounding-call">
+      <motion.section
+        className="grounding-call"
+        initial={{ opacity: 0, y: 25 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div>
           <Eyebrow>SOMATIC TOOLKIT</Eyebrow>
           <h2>
@@ -660,16 +746,18 @@ export default function Home() {
             <em>let’s arrive.</em>
           </h2>
           <p>One gentle minute can change the temperature of a moment.</p>
-          <PillButton className="forest-fill" onClick={() => go("ground")}>
-            Try box breathing <ArrowRight size={16} strokeWidth={1.5} />
-          </PillButton>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <PillButton className="forest-fill" onClick={() => go("ground")}>
+              Try box breathing <ArrowRight size={16} strokeWidth={1.5} />
+            </PillButton>
+          </motion.div>
         </div>
         <div className="grounding-art">
           <BotanicalGroundingIllustration />
           <i />
           <i />
         </div>
-      </section>
+      </motion.section>
     </motion.div>
   );
 
