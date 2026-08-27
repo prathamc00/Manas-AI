@@ -1504,9 +1504,22 @@ export default function Home() {
           <Mark small />
           <span>MANAS</span>
         </button>
-        <button onClick={() => setMenuOpen((current) => !current)} aria-label="Open menu">
-          <Menu size={22} strokeWidth={1.5} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setHistoryOpen(true)}
+            aria-label="Recent chats"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-forest hover:bg-muted"
+          >
+            <History size={18} strokeWidth={1.5} />
+          </button>
+          <button
+            onClick={() => setMenuOpen((current) => !current)}
+            aria-label="Open menu"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-forest hover:bg-muted"
+          >
+            <Menu size={20} strokeWidth={1.5} />
+          </button>
+        </div>
       </header>
 
       {/* Mobile Nav Drawer */}
@@ -1519,12 +1532,36 @@ export default function Home() {
             exit={{ opacity: 0, y: -12 }}
           >
             {navItems.map((item) => (
-              <button key={item.id} onClick={() => go(item.id)}>
+              <button
+                key={item.id}
+                onClick={() => {
+                  go(item.id);
+                  setMenuOpen(false);
+                }}
+                className={view === item.id ? "font-bold text-forest bg-[#ebf0e8]" : ""}
+              >
                 {item.label}
               </button>
             ))}
-            <button onClick={() => setDisguise(true)}>Quick exit (Esc)</button>
-            <button onClick={handleLogout} className="text-destructive">Log out</button>
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                setHistoryOpen(true);
+              }}
+            >
+              Conversation History ({sessions.length})
+            </button>
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                setDisguise(true);
+              }}
+            >
+              Quick disguise (Esc)
+            </button>
+            <button onClick={handleLogout} className="text-destructive">
+              Log out
+            </button>
           </motion.nav>
         )}
       </AnimatePresence>

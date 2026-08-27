@@ -415,3 +415,129 @@
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ========================================================================== */
+/* 📱 BULLETPROOF RESPONSIVE LAYOUT FIXES FOR MOBILE (<1024px)               */
+/* ========================================================================== */
+@media (max-width: 1023px) {
+  .companion-app {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+  }
+
+  /* Completely hide desktop sidebar and desktop topbar on mobile/tablet */
+  .app-sidebar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+  }
+
+  .app-topbar {
+    display: none !important;
+    height: 0 !important;
+  }
+
+  /* Main content occupies full width without 256px margin */
+  .app-main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow-x: hidden !important;
+    min-height: 100vh !important;
+  }
+
+  /* Mobile Header at top */
+  .app-mobile-header {
+    display: flex !important;
+    width: 100% !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 16px 8px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 45 !important;
+    background: rgba(249, 248, 244, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid var(--border) !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  /* Mobile Content spacing */
+  .app-content {
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding: 20px 16px calc(95px + env(safe-area-inset-bottom, 0px)) !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .page-heading {
+    margin-bottom: 20px !important;
+  }
+
+  .page-heading h1 {
+    font-size: clamp(32px, 8.5vw, 42px) !important;
+    line-height: 1.02 !important;
+  }
+
+  .app-hero-copy h2, .grounding-call h2, .memory-hero h2, .practice-feature h2, .tool-ending h2 {
+    font-size: clamp(26px, 7vw, 36px) !important;
+  }
+
+  .today-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .checkin-panel, .pulse-panel {
+    width: 100% !important;
+    padding: 20px 16px !important;
+    background: #fff !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 20px !important;
+  }
+
+  .path-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .tool-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .breath-card, .sensory-card {
+    width: 100% !important;
+    border-radius: 22px !important;
+    padding: 24px 18px !important;
+  }
+
+  .conversation-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .conversation-panel {
+    width: 100% !important;
+    border-radius: 20px !important;
+  }
+}
+
