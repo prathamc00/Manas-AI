@@ -1,6 +1,7 @@
 import type { Session, Memory, MoodEntry, Goal, SafetyResources, User, AuthResponse } from '../types';
 
 const TOKEN_KEY = 'manas_auth_token';
+const USER_KEY = 'manas_user_cache';
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '/api';
 
 function getAuthHeaders(customHeaders: Record<string, string> = {}): Record<string, string> {
@@ -53,10 +54,20 @@ export const api = {
 
   clearToken() {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   },
 
   logout() {
     this.clearToken();
+  },
+
+  getCachedUser(): User | null {
+    try {
+      const data = localStorage.getItem(USER_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
   },
 
   async getCurrentUser(): Promise<User | null> {
@@ -77,6 +88,9 @@ export const api = {
     const result: AuthResponse = await res.json();
     if (result.access_token) {
       localStorage.setItem(TOKEN_KEY, result.access_token);
+      if (result.user) {
+        localStorage.setItem(USER_KEY, JSON.stringify(result.user));
+      }
     }
     return result;
   },
@@ -94,6 +108,9 @@ export const api = {
     const result: AuthResponse = await res.json();
     if (result.access_token) {
       localStorage.setItem(TOKEN_KEY, result.access_token);
+      if (result.user) {
+        localStorage.setItem(USER_KEY, JSON.stringify(result.user));
+      }
     }
     return result;
   },
@@ -106,13 +123,21 @@ export const api = {
       const res = await request('/auth/me', {
         headers: getAuthHeaders(),
       });
-      if (!res.ok) {
-        localStorage.removeItem(TOKEN_KEY);
+      if (res.status === 401) {
+        // Token is genuinely invalid or expired
+        this.clearToken();
         return null;
       }
-      return await res.json();
+      if (res.ok) {
+        const user: User = await res.json();
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        return user;
+      }
+      // On non-401 errors (500, network delay), fallback to cached user
+      return this.getCachedUser();
     } catch {
-      return null;
+      // On network errors, fallback to cached user instead of wiping session
+      return this.getCachedUser();
     }
   },
 

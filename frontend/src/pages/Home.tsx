@@ -173,9 +173,23 @@ export default function Home() {
   }, []);
 
   const loadAllData = async () => {
+    const token = api.getToken();
+    if (!token) {
+      setLocation("/login");
+      return;
+    }
+
+    // Instantly set cached user if available for zero-flicker load
+    const cached = api.getCachedUser();
+    if (cached) {
+      setCurrentUser(cached);
+    }
+
     try {
       const user = await api.getCurrentUser();
-      setCurrentUser(user);
+      if (user) {
+        setCurrentUser(user);
+      }
 
       const [sessList, memList, moodList, goalList] = await Promise.all([
         api.getSessions().catch(() => []),
@@ -191,12 +205,16 @@ export default function Home() {
 
       if (sessList.length > 0) {
         setActiveSessionId(sessList[0].id);
-        const fullSession = await api.getSession(sessList[0].id);
-        setMessages(fullSession.messages || []);
+        const fullSession = await api.getSession(sessList[0].id).catch(() => null);
+        if (fullSession && fullSession.messages) {
+          setMessages(fullSession.messages);
+        }
       }
-    } catch {
-      // If auth fails, redirect to landing or login
-      setLocation("/login");
+    } catch (err: any) {
+      // Only redirect if genuinely logged out (no token)
+      if (!api.getToken()) {
+        setLocation("/login");
+      }
     }
   };
 

@@ -1,7 +1,8 @@
 import { ArrowRight, Check, Leaf, LockKeyhole, Menu, MessageCircleHeart, Sparkles, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { api } from "../lib/api";
 import {
   BotanicalMark,
   BotanicalHeroIllustration,
@@ -24,10 +25,23 @@ const easeOrganic = [0.22, 1, 0.36, 1] as const;
 export default function Landing() {
   const [, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!api.getToken());
+  }, []);
 
   const navigate = (path: string) => {
     setLocation(path);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const startOrOpen = () => {
+    if (api.getToken()) {
+      navigate("/app");
+    } else {
+      navigate("/signup");
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -70,15 +84,23 @@ export default function Landing() {
           </button>
         </nav>
         <div className="marketing-actions">
-          <button className="text-link" onClick={() => navigate("/login")}>
-            Log in
-          </button>
-          <button
-            className="forest-button nav-cta"
-            onClick={() => navigate("/signup")}
-          >
-            Begin your space <ArrowRight size={16} strokeWidth={1.5} />
-          </button>
+          {isLoggedIn ? (
+            <button className="forest-button nav-cta" onClick={() => navigate("/app")}>
+              Open your space <ArrowRight size={16} strokeWidth={1.5} />
+            </button>
+          ) : (
+            <>
+              <button className="text-link" onClick={() => navigate("/login")}>
+                Log in
+              </button>
+              <button
+                className="forest-button nav-cta"
+                onClick={() => navigate("/signup")}
+              >
+                Begin your space <ArrowRight size={16} strokeWidth={1.5} />
+              </button>
+            </>
+          )}
         </div>
         <button
           className="menu-button"
@@ -136,12 +158,14 @@ export default function Landing() {
                 Privacy
               </button>
             </nav>
-            <button className="forest-button mt-6 w-full" onClick={() => navigate("/signup")}>
-              Begin your space <ArrowRight size={16} strokeWidth={1.5} />
+            <button className="forest-button mt-6 w-full" onClick={startOrOpen}>
+              {isLoggedIn ? "Open your space" : "Begin your space"} <ArrowRight size={16} strokeWidth={1.5} />
             </button>
-            <button className="text-link mt-3 w-full text-center" onClick={() => navigate("/login")}>
-              Already have a space? Log in
-            </button>
+            {!isLoggedIn && (
+              <button className="text-link mt-3 w-full text-center" onClick={() => navigate("/login")}>
+                Already have a space? Log in
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -169,9 +193,9 @@ export default function Landing() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="forest-button"
-              onClick={() => navigate("/signup")}
+              onClick={startOrOpen}
             >
-              Create your private space <ArrowRight size={17} strokeWidth={1.5} />
+              {isLoggedIn ? "Open your private space" : "Create your private space"} <ArrowRight size={17} strokeWidth={1.5} />
             </motion.button>
             <button
               className="quiet-link"

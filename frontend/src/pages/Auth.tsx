@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Leaf, LockKeyhole, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { api } from "../lib/api";
@@ -16,6 +16,13 @@ export default function Auth({ mode }: { mode: "login" | "signup" }) {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    if (api.getToken()) {
+      setLocation("/app");
+    }
+  }, [setLocation]);
 
   const creating = mode === "signup";
 
