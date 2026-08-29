@@ -14,7 +14,7 @@
 
 <br />
 
-[🚀 **Launch Live Application**](https://manass-ai.vercel.app/) • [📑 **Read Product Requirement Document (PRD)**](PRD.md) • [✨ **Explore Features**](#-core-features) • [🤝 **Contribute**](#-open-for-contribution)
+[🚀 **Launch Live Application**](https://manass-ai.vercel.app/) • [🤝 **Contribute**](#-open-for-contribution)
 
 </div>
 
