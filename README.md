@@ -14,7 +14,7 @@
 
 <br />
 
-[🚀 **Launch Live Application**](https://manass-ai.vercel.app/) • [🤝 **Contribute**](#-open-for-contribution)
+[Live App **Launch**](https://manass-ai.vercel.app/) • [🤝 **Contribute**](#-open-for-contribution)
 
 </div>
 
