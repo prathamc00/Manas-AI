@@ -353,17 +353,39 @@ export default function Home() {
         mode: selectedApproach,
       });
 
-      if (!activeSessionId) {
-        setActiveSessionId(response.session_id);
-      }
+      // Always ensure the active session ID is synced with the server response
+      setActiveSessionId(response.session_id);
 
       if (response.is_crisis) {
         setCrisisOpen(true);
       }
 
-      // Reload full session messages to get true IDs & timestamps
-      const full = await api.getSession(response.session_id);
-      setMessages(full.messages || []);
+      // Immediately append assistant response to prevent any flicker or blank state
+      const assistantMsg: Message = {
+        id: response.message_id,
+        session_id: response.session_id,
+        role: "assistant",
+        content: response.content,
+        reflections: response.reflections,
+        created_at: response.created_at || new Date().toISOString(),
+      };
+
+      setMessages((prev) => {
+        const updated = prev.map((m) =>
+          m.id === optimisticMsg.id ? { ...m, session_id: response.session_id } : m
+        );
+        return [...updated, assistantMsg];
+      });
+
+      // Synchronize with authoritative server messages
+      try {
+        const full = await api.getSession(response.session_id);
+        if (full && Array.isArray(full.messages) && full.messages.length > 0) {
+          setMessages(full.messages);
+        }
+      } catch (sessErr) {
+        console.warn("Could not reload session messages", sessErr);
+      }
 
       // Refresh memory vault in background
       const updatedMemories = await api.getMemories().catch(() => []);
