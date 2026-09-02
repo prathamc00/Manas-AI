@@ -90,7 +90,10 @@ class AIOrchestrator:
         )
 
         messages = [LLMMessage(role="system", content=system_prompt)]
-        for msg in context.recent_messages:
+        history = context.recent_messages
+        if history and history[-1]["role"] == "user" and history[-1]["content"] == user_message:
+            history = history[:-1]
+        for msg in history:
             messages.append(LLMMessage(role=msg["role"], content=msg["content"]))
         messages.append(LLMMessage(role="user", content=user_message))
 
